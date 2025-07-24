@@ -1,7 +1,0 @@
-{
-    "XF\\Admin\\Controller\\Option": {
-        "class": "hardMOB\\AfiliateLinks\\XF\\Admin\\Controller\\Option",
-        "execute_order": 10,
-        "active": true
-    }
-}
