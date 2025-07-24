@@ -1,0 +1,18 @@
+{
+    "title": "Links de Afiliados",
+    "description": "Converte links para diversas lojas em links de afiliados automaticamente",
+    "version_id": 1000000,
+    "version_string": "1.0.0",
+    "dev": "hardMOB",
+    "dev_url": "https://www.hardmob.com.br",
+    "faq_url": "",
+    "support_url": "",
+    "extra_urls": {},
+    "require": {
+        "XF": [2010070, "XenForo 2.1.0+"]
+    },
+    "icon": "",
+    "class_extensions": {
+        "XF\\Admin\\Controller\\Option": "hardMOB\\AfiliateLinks\\XF\\Admin\\Controller\\Option"
+    }
+}

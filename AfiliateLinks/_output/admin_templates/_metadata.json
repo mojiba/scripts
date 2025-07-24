@@ -1,0 +1,14 @@
+{
+    "option_template_hmaf_aliexpress_app_key": {
+        "version_id": 1000000,
+        "version_string": "1.0.0"
+    },
+    "option_template_hmaf_aliexpress_app_secret": {
+        "version_id": 1000000,
+        "version_string": "1.0.0"
+    },
+    "option_template_hmaf_aliexpress_tracking_id": {
+        "version_id": 1000000,
+        "version_string": "1.0.0"
+    }
+}

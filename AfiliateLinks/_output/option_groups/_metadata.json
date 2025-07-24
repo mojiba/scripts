@@ -1,0 +1,7 @@
+{
+    "hardMOBAfiliateLinks": {
+        "icon": "fas fa-link",
+        "display_order": 1000,
+        "debug_only": false
+    }
+}
