@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates>
+    <template type="public" title="hardmob_afiliados_redirect" version_id="1000000" version_string="1.0.0"><![CDATA[<xf:title>Redirecionando...</xf:title>
+
+<div class="block">
+    <div class="block-container">
+        <div class="block-body">
+            <div class="blockMessage blockMessage--important">
+                Você está sendo redirecionado para o produto...
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    setTimeout(function() {
+        window.location.href = '{$affiliateUrl}';
+    }, 1000);
+</script>]]></template>
+</templates>

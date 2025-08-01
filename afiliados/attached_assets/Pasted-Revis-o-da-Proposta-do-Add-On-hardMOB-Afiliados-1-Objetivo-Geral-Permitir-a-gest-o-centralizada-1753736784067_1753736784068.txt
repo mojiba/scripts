@@ -1,0 +1,130 @@
+Revisão da Proposta do Add-On hardMOB Afiliados
+
+1. Objetivo Geral
+Permitir a gestão centralizada de links de afiliados no XenForo 2.2.17, automatizando:
+- Detecção e reescrita de URLs para inserir códigos de afiliado
+- Geração programada de links via cron
+- Cache inteligente com drivers configuráveis
+- Integração com Google Analytics (GA4/UA)
+- Registro detalhado de estatísticas de cliques
+- Scaffold automático de conectores por loja
+- Ferramentas de manutenção (limpar cache, reset completo)
+2. Funcionalidades Principais
+- Gestão de Lojas
+- CRUD de lojas com ID, nome, domínio, código e status
+- Criação automática de stub de conector ao adicionar loja
+- Processamento de Links
+- Substituição de placeholders {{slug:/produtos/123}}
+- Rota pública /affiliate/{store}/{slug} que registra clique e faz redirect 302
+- Geração via Cron
+- Job agendado (GenerateLinks.php) para pré-gerar todas as combinações
+- Intervalo de agendamento configurável no ACP
+- Cache de URLs
+- Drivers file, Redis, etc.
+- Expiração configurável (0 = permanente)
+- Botão “Limpar Cache Agora” no painel de ferramentas
+- Estatísticas de Cliques
+- Armazenamento de: loja, path, criador, clicador (usuário/visitante), timestamp
+- Filtros por período, criador, clicador e granularidade
+- Dashboards e gráficos no ACP
+- Ferramentas de Manutenção
+- Reset completo: apaga tabelas, frases, rotas, jobs e templates customizados
+- Scaffold de módulos de conector para novas lojas
+
+3. Estrutura de Arquivos Alinhada ao XenForo 2.2.17
+src/addons/
+└── hardMOB/
+    └── Afiliados/
+        ├── addon.json
+        ├── src/
+        │   └── hardMOB/
+        │       └── Afiliados/
+        │           ├── Setup.php
+        │           ├── Admin/
+        │           │   ├── Controller/
+        │           │   │   ├── Affiliates.php
+        │           │   │   └── Tools.php
+        │           │   └── Templates/
+        │           │       ├── affiliates_list.html
+        │           │       ├── affiliates_form.html
+        │           │       ├── affiliates_reset.html
+        │           │       └── affiliates_stats.html
+        │           ├── Cron/
+        │           │   └── GenerateLinks.php
+        │           ├── Cache/
+        │           │   └── LinkCache.php
+        │           ├── Connector/
+        │           │   ├── StoreInterface.php
+        │           │   ├── Amazon.php
+        │           │   ├── MercadoLivre.php
+        │           │   ├── Shopee.php
+        │           │   └── CustomStore.php
+        │           ├── Entity/
+        │           │   └── Store.php
+        │           ├── Repository/
+        │           │   └── Store.php
+        │           ├── Service/
+        │           │   ├── AffiliateGenerator.php
+        │           │   ├── Cron.php
+        │           │   ├── Analytics.php
+        │           │   └── Stats.php
+        │           ├── Job/
+        │           │   └── GenerateAffiliateLinks.php
+        │           ├── Listener.php
+        │           ├── Public/
+        │           │   └── EventListeners.php
+        │           ├── js/
+        │           │   ├── admin-stores.js
+        │           │   └── public-tracking.js
+        │           ├── css/
+        │           │   ├── admin-styles.less
+        │           │   └── public-styles.less
+        │           └── Helper/
+        │               └── LinkParser.php
+        └── _data/
+            ├── admin_navigation.xml
+            ├── code_event_listeners.xml
+            ├── cron_entries.xml
+            ├── entities.xml
+            ├── options.xml
+            ├── phrases.xml
+            ├── route_prefixes.xml
+            ├── server_definitions.xml
+            ├── templates.xml
+            └── widget_positions.xml
+			
+4. Fases de Implementação e Testes
+- Instalação Inicial
+- Instalar addon.json, rodar Setup.php para criar tabelas
+- Verificar menus e rotas no ACP
+- CRUD de Lojas
+- Adicionar, editar e remover lojas
+- Confirmar scaffold de Connector/StoreName.php
+- Reescrita de Links
+- Inserir placeholder em post de fórum
+- Testar rota pública e redirect com registro de clique
+- Cron & Cache
+- Agendar GenerateLinks e validar pré-geração no cache
+- Testar “Limpar Cache Agora” e expiração
+- Estatísticas de Cliques
+- Registrar cliques de usuários logados e visitantes
+- Visualizar dashboards e aplicar filtros
+- Ferramentas & Reset
+- Executar reset completo e confirmar limpeza de dados e customizações
+- Gerar novos stubs de conector
+- Aprimoramentos
+- Ajustes de CSS/JS para responsividade
+- Adição de testes unitários para entidades e serviços
+
+5. Recomendações Finais
+- Valide o arquivo addon.json em JSONLint antes da sincronização.
+- Mantenha namespaces e paths do autoloader consistentes.
+- Use os comandos CLI:
+- php cmd.php xf-addon:cleanup
+- php cmd.php xf-addon:rebuild
+- php cmd.php xf-addon:sync-json hardMOB_afiliados --debug
+- php cmd.php xf-addon:install hardMOB_afiliados
+- Verifique permissões de arquivo/leitura para processos web e CLI.
+Com esta revisão, a proposta do add-on “Afiliados” está totalmente alinhada à convenção e ao ciclo de vida do XenForo 2.2.17, pronta para desenvolvimento e testes.
+
+

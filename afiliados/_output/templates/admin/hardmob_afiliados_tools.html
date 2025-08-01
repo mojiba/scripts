@@ -1,0 +1,85 @@
+<xf:title>{{ phrase('hardmob_afiliados_tools_nav') }}</xf:title>
+
+<div class="block">
+    <div class="block-container">
+        <div class="block-header">
+            <h3>Visão Geral do Sistema</h3>
+        </div>
+        
+        <div class="block-body">
+            <div class="structItemContainer">
+                <div class="structItem">
+                    <div class="structItem-cell structItem-cell--main">
+                        <div class="structItem-title">{{ phrase('hardmob_afiliados_total_stores') }}</div>
+                    </div>
+                    <div class="structItem-cell">
+                        <strong>{$clickStats.total_stores}</strong>
+                    </div>
+                </div>
+                
+                <div class="structItem">
+                    <div class="structItem-cell structItem-cell--main">
+                        <div class="structItem-title">{{ phrase('hardmob_afiliados_total_clicks') }}</div>
+                    </div>
+                    <div class="structItem-cell">
+                        <strong>{$clickStats.total_clicks}</strong>
+                    </div>
+                </div>
+                
+                <div class="structItem">
+                    <div class="structItem-cell structItem-cell--main">
+                        <div class="structItem-title">{{ phrase('hardmob_afiliados_clicks_today') }}</div>
+                    </div>
+                    <div class="structItem-cell">
+                        <strong>{$clickStats.clicks_today}</strong>
+                    </div>
+                </div>
+                
+                <div class="structItem">
+                    <div class="structItem-cell structItem-cell--main">
+                        <div class="structItem-title">{{ phrase('hardmob_afiliados_cache_entries') }}</div>
+                    </div>
+                    <div class="structItem-cell">
+                        <strong>{$cacheStats.total_entries}</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="block">
+    <div class="block-container">
+        <div class="block-header">
+            <h3>Ferramentas de Manutenção</h3>
+        </div>
+        
+        <div class="block-body">
+            <div class="structItemContainer">
+                <div class="structItem">
+                    <div class="structItem-cell structItem-cell--main">
+                        <div class="structItem-title">{{ phrase('hardmob_afiliados_clear_cache') }}</div>
+                        <div class="structItem-minor">Remove todas as entradas do cache de links</div>
+                    </div>
+                    <div class="structItem-cell structItem-cell--action">
+                        <xf:button href="{{ link('affiliates/tools/clear-cache') }}" class="button--primary" overlay="true">
+                            Limpar Cache
+                        </xf:button>
+                    </div>
+                </div>
+                
+                <div class="structItem">
+                    <div class="structItem-cell structItem-cell--main">
+                        <div class="structItem-title">{{ phrase('hardmob_afiliados_reset_all') }}</div>
+                        <div class="structItem-minor">Remove todos os dados do addon (irreversível)</div>
+                    </div>
+                    <div class="structItem-cell structItem-cell--action">
+                        <xf:button href="{{ link('affiliates/tools/reset-all') }}" class="button--alt" overlay="true">
+                            Reset Completo
+                        </xf:button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

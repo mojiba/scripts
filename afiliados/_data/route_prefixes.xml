@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<route_prefixes>
+    <route route_type="admin" route_prefix="affiliates" sub_name="">
+        <route_match>/affiliates/</route_match>
+        <build_match>/affiliates/</build_match>
+        <controller>hardMOB\Afiliados:Affiliates</controller>
+    </route>
+</route_prefixes>

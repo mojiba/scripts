@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<admin_navigation>
+    <navigation navigation_id="hardmob_afiliados" parent_navigation_id="" display_order="1000" debug_only="0" development_only="0" hide_no_children="0">
+        <phrase title="hardmob_afiliados_nav" version_id="1000000" version_string="1.0.0"><![CDATA[hardMOB Afiliados]]></phrase>
+        <link>affiliates</link>
+        <icon>fa-link</icon>
+        <admin_permission>hardmob_afiliados</admin_permission>
+    </navigation>
+    <navigation navigation_id="hardmob_afiliados_stores" parent_navigation_id="hardmob_afiliados" display_order="10" debug_only="0" development_only="0" hide_no_children="0">
+        <phrase title="hardmob_afiliados_stores_nav" version_id="1000000" version_string="1.0.0"><![CDATA[Gerenciar Lojas]]></phrase>
+        <link>affiliates</link>
+    </navigation>
+    <navigation navigation_id="hardmob_afiliados_stats" parent_navigation_id="hardmob_afiliados" display_order="20" debug_only="0" development_only="0" hide_no_children="0">
+        <phrase title="hardmob_afiliados_stats_nav" version_id="1000000" version_string="1.0.0"><![CDATA[Estatísticas]]></phrase>
+        <link>affiliates/tools/stats</link>
+    </navigation>
+    <navigation navigation_id="hardmob_afiliados_tools" parent_navigation_id="hardmob_afiliados" display_order="30" debug_only="0" development_only="0" hide_no_children="0">
+        <phrase title="hardmob_afiliados_tools_nav" version_id="1000000" version_string="1.0.0"><![CDATA[Ferramentas]]></phrase>
+        <link>affiliates/tools</link>
+    </navigation>
+</admin_navigation>

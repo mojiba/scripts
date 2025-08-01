@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cron_entries>
+    <cron entry_id="hardmob_afiliados_generate_links" cron_class="hardMOB\Afiliados\Cron\GenerateLinks" cron_method="runHourly" active="1" next_run="0">
+        <cron_rules>
+            <minute>0</minute>
+            <hour>-1</hour>
+            <day>-1</day>
+            <month>-1</month>
+            <dow>-1</dow>
+        </cron_rules>
+        <phrase title="cron_entry.hardmob_afiliados_generate_links" version_id="1000000" version_string="1.0.0"><![CDATA[hardMOB Afiliados: Gerar Links]]></phrase>
+    </cron>
+    <cron entry_id="hardmob_afiliados_cleanup" cron_class="hardMOB\Afiliados\Cron\GenerateLinks" cron_method="runDaily" active="1" next_run="0">
+        <cron_rules>
+            <minute>30</minute>
+            <hour>2</hour>
+            <day>-1</day>
+            <month>-1</month>
+            <dow>-1</dow>
+        </cron_rules>
+        <phrase title="cron_entry.hardmob_afiliados_cleanup" version_id="1000000" version_string="1.0.0"><![CDATA[hardMOB Afiliados: Limpeza]]></phrase>
+    </cron>
+</cron_entries>

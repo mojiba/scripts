@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<admin_permissions>
+    <admin_permission admin_permission_id="hardmob_afiliados" display_order="1000">
+        <phrase title="admin_permission.hardmob_afiliados" version_id="1000000" version_string="1.0.0"><![CDATA[hardMOB Afiliados]]></phrase>
+    </admin_permission>
+</admin_permissions>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<phrases>
+    <phrase title="hardmob_afiliados_nav" version_id="1000000" version_string="1.0.0"><![CDATA[hardMOB Afiliados]]></phrase>
+    <phrase title="hardmob_afiliados_stores_nav" version_id="1000000" version_string="1.0.0"><![CDATA[Gerenciar Lojas]]></phrase>
+    <phrase title="hardmob_afiliados_stats_nav" version_id="1000000" version_string="1.0.0"><![CDATA[Estatísticas]]></phrase>
+    <phrase title="hardmob_afiliados_tools_nav" version_id="1000000" version_string="1.0.0"><![CDATA[Ferramentas]]></phrase>
+    <phrase title="hardmob_afiliados_store_name" version_id="1000000" version_string="1.0.0"><![CDATA[Nome da Loja]]></phrase>
+    <phrase title="hardmob_afiliados_store_domain" version_id="1000000" version_string="1.0.0"><![CDATA[Domínio]]></phrase>
+    <phrase title="hardmob_afiliados_affiliate_code" version_id="1000000" version_string="1.0.0"><![CDATA[Código de Afiliado]]></phrase>
+    <phrase title="hardmob_afiliados_store_status" version_id="1000000" version_string="1.0.0"><![CDATA[Status]]></phrase>
+    <phrase title="hardmob_afiliados_store_active" version_id="1000000" version_string="1.0.0"><![CDATA[Ativo]]></phrase>
+    <phrase title="hardmob_afiliados_store_inactive" version_id="1000000" version_string="1.0.0"><![CDATA[Inativo]]></phrase>
+    <phrase title="hardmob_afiliados_add_store" version_id="1000000" version_string="1.0.0"><![CDATA[Adicionar Loja]]></phrase>
+    <phrase title="hardmob_afiliados_edit_store" version_id="1000000" version_string="1.0.0"><![CDATA[Editar Loja]]></phrase>
+    <phrase title="hardmob_afiliados_delete_store" version_id="1000000" version_string="1.0.0"><![CDATA[Excluir Loja]]></phrase>
+    <phrase title="hardmob_afiliados_please_enter_affiliate_code" version_id="1000000" version_string="1.0.0"><![CDATA[Por favor, insira um código de afiliado válido.]]></phrase>
+    <phrase title="hardmob_afiliados_cache_cleared" version_id="1000000" version_string="1.0.0"><![CDATA[Cache limpo com sucesso. {count} entradas removidas.]]></phrase>
+    <phrase title="hardmob_afiliados_reset_complete" version_id="1000000" version_string="1.0.0"><![CDATA[Reset completo realizado com sucesso.]]></phrase>
+    <phrase title="hardmob_afiliados_total_stores" version_id="1000000" version_string="1.0.0"><![CDATA[Total de Lojas]]></phrase>
+    <phrase title="hardmob_afiliados_total_clicks" version_id="1000000" version_string="1.0.0"><![CDATA[Total de Cliques]]></phrase>
+    <phrase title="hardmob_afiliados_clicks_today" version_id="1000000" version_string="1.0.0"><![CDATA[Cliques Hoje]]></phrase>
+    <phrase title="hardmob_afiliados_unique_users" version_id="1000000" version_string="1.0.0"><![CDATA[Usuários Únicos]]></phrase>
+    <phrase title="hardmob_afiliados_cache_entries" version_id="1000000" version_string="1.0.0"><![CDATA[Entradas no Cache]]></phrase>
+    <phrase title="hardmob_afiliados_clear_cache" version_id="1000000" version_string="1.0.0"><![CDATA[Limpar Cache]]></phrase>
+    <phrase title="hardmob_afiliados_reset_all" version_id="1000000" version_string="1.0.0"><![CDATA[Reset Completo]]></phrase>
+    <phrase title="hardmob_afiliados_confirm_reset" version_id="1000000" version_string="1.0.0"><![CDATA[Tem certeza que deseja fazer o reset completo? Esta ação não pode ser desfeita.]]></phrase>
+    <phrase title="admin_permission.hardmob_afiliados" version_id="1000000" version_string="1.0.0"><![CDATA[hardMOB Afiliados]]></phrase>
+    <phrase title="permission_group.hardmob_afiliados" version_id="1000000" version_string="1.0.0"><![CDATA[hardMOB Afiliados]]></phrase>
+    <phrase title="cron_entry.hardmob_afiliados_generate_links" version_id="1000000" version_string="1.0.0"><![CDATA[hardMOB Afiliados: Gerar Links]]></phrase>
+    <phrase title="cron_entry.hardmob_afiliados_cleanup" version_id="1000000" version_string="1.0.0"><![CDATA[hardMOB Afiliados: Limpeza]]></phrase>
+    <phrase title="option.hardmob_afiliados_enable_cron" version_id="1000000" version_string="1.0.0"><![CDATA[Habilitar Cron Jobs]]></phrase>
+    <phrase title="option_explain.hardmob_afiliados_enable_cron" version_id="1000000" version_string="1.0.0"><![CDATA[Permite que o sistema execute jobs agendados para geração de links e limpeza.]]></phrase>
+    <phrase title="option.hardmob_afiliados_cache_driver" version_id="1000000" version_string="1.0.0"><![CDATA[Driver de Cache]]></phrase>
+    <phrase title="option_explain.hardmob_afiliados_cache_driver" version_id="1000000" version_string="1.0.0"><![CDATA[Sistema de cache para armazenar links gerados.]]></phrase>
+    <phrase title="option.hardmob_afiliados_cache_ttl" version_id="1000000" version_string="1.0.0"><![CDATA[TTL do Cache (segundos)]]></phrase>
+    <phrase title="option_explain.hardmob_afiliados_cache_ttl" version_id="1000000" version_string="1.0.0"><![CDATA[Tempo de vida do cache em segundos. 0 = permanente.]]></phrase>
+    <phrase title="option.hardmob_afiliados_ga_tracking_id" version_id="1000000" version_string="1.0.0"><![CDATA[ID de Tracking Google Analytics]]></phrase>
+    <phrase title="option_explain.hardmob_afiliados_ga_tracking_id" version_id="1000000" version_string="1.0.0"><![CDATA[ID do Google Analytics para tracking de cliques (ex: UA-XXXXXXX-X ou G-XXXXXXXXXX).]]></phrase>
+    <phrase title="option_group.hardmob_afiliados" version_id="1000000" version_string="1.0.0"><![CDATA[hardMOB Afiliados]]></phrase>
+    <phrase title="option_group_description.hardmob_afiliados" version_id="1000000" version_string="1.0.0"><![CDATA[Configurações do sistema de afiliados.]]></phrase>
+</phrases>

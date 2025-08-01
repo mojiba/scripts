@@ -1,0 +1,27 @@
+<xf:title>
+    <xf:if is="$store.exists()">
+        {{ phrase('hardmob_afiliados_edit_store') }}: {$store.name}
+    <xf:else />
+        {{ phrase('hardmob_afiliados_add_store') }}
+    </xf:if>
+</xf:title>
+
+<xf:form action="{{ link('affiliates/save', $store) }}" ajax="true" class="block">
+    <div class="block-container">
+        <div class="block-body">
+            <xf:textboxrow name="name" value="{$store.name}" label="{{ phrase('hardmob_afiliados_store_name') }}" required="true" />
+            
+            <xf:textboxrow name="domain" value="{$store.domain}" label="{{ phrase('hardmob_afiliados_store_domain') }}" 
+                          hint="Exemplo: amazon.com.br (sem http:// ou https://)" required="true" />
+            
+            <xf:textboxrow name="affiliate_code" value="{$store.affiliate_code}" label="{{ phrase('hardmob_afiliados_affiliate_code') }}" required="true" />
+            
+            <xf:selectrow name="status" value="{$store.status}" label="{{ phrase('hardmob_afiliados_store_status') }}">
+                <xf:option value="active">{{ phrase('hardmob_afiliados_store_active') }}</xf:option>
+                <xf:option value="inactive">{{ phrase('hardmob_afiliados_store_inactive') }}</xf:option>
+            </xf:selectrow>
+        </div>
+        
+        <xf:submitrow sticky="true" icon="save" />
+    </div>
+</xf:form>
