@@ -227,7 +227,7 @@ ini_set('display_errors', 1);
         <p>Este é um servidor de desenvolvimento que mostra a estrutura do addon. Para usar em produção:</p>
         <ul>
             <li>Instale em uma instalação completa do XenForo 2.2.17+</li>
-            <li>Configure PHP 8.0+ com as extensões necessárias</li>
+            <li>Configure PHP 8.1+ com as extensões necessárias</li>
             <li>Ajuste as permissões de arquivos conforme necessário</li>
             <li>Configure o cache Redis se desejado para melhor performance</li>
         </ul>

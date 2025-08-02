@@ -29,7 +29,7 @@ Preferred communication style: Simple, everyday language.
 
 ### Core Framework
 - **Platform**: XenForo 2.2.17 add-on
-- **PHP Version**: 8.0.0+
+- **PHP Version**: 8.1.0+
 - **Architecture Pattern**: MVC (Model-View-Controller) following XenForo conventions
 - **Namespace**: `hardMOB\Afiliados`
 
@@ -88,7 +88,7 @@ Preferred communication style: Simple, everyday language.
 
 ### Required Dependencies
 - **XenForo 2.2.0+**: Core framework dependency
-- **PHP 8.0.0+**: Minimum PHP version requirement
+- **PHP 8.1.0+**: Minimum PHP version requirement
 
 ### Optional Integrations
 - **Redis**: For advanced caching (alternative to file-based caching)
