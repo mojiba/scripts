@@ -97,34 +97,48 @@ class Setup extends AbstractSetup
     public function uninstallStep1()
     {
         $sm = $this->schemaManager();
-        if ($sm->tableExists('xf_hardmob_affiliate_stores'))
+        
+        // Remove all main tables created by this add-on
+        $tables = [
+            'xf_hardmob_affiliate_stores',
+            'xf_hardmob_affiliate_clicks', 
+            'xf_hardmob_affiliate_cache'
+        ];
+        
+        foreach ($tables as $table)
         {
-            $sm->dropTable('xf_hardmob_affiliate_stores');
+            if ($sm->tableExists($table))
+            {
+                $sm->dropTable($table);
+            }
+        }
+        
+        // Clean up any potential conflict tables
+        $conflictTables = [
+            'xf_hardmob_affiliate_stores__conflict',
+            'xf_hardmob_affiliate_clicks__conflict',
+            'xf_hardmob_affiliate_cache__conflict'
+        ];
+        
+        foreach ($conflictTables as $conflictTable)
+        {
+            if ($sm->tableExists($conflictTable))
+            {
+                $sm->dropTable($conflictTable);
+            }
         }
     }
 
     public function uninstallStep2()
     {
-        $sm = $this->schemaManager();
-        if ($sm->tableExists('xf_hardmob_affiliate_clicks'))
-        {
-            $sm->dropTable('xf_hardmob_affiliate_clicks');
-        }
-        
-        // Clean up any conflict tables
-        if ($sm->tableExists('xf_hardmob_affiliate_clicks__conflict'))
-        {
-            $sm->dropTable('xf_hardmob_affiliate_clicks__conflict');
-        }
+        // All tables are now removed in uninstallStep1 for a more robust uninstall process
+        // This method is kept for backward compatibility but performs no operations
     }
 
     public function uninstallStep3()
     {
-        $sm = $this->schemaManager();
-        if ($sm->tableExists('xf_hardmob_affiliate_cache'))
-        {
-            $sm->dropTable('xf_hardmob_affiliate_cache');
-        }
+        // All tables are now removed in uninstallStep1 for a more robust uninstall process
+        // This method is kept for backward compatibility but performs no operations
     }
     
     public function preInstall()
