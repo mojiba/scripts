@@ -1,0 +1,252 @@
+<?php
+/**
+ * Cache Monitor - Arquivo de Configuração de Exemplo
+ * 
+ * Copie este arquivo para config.php e ajuste as configurações conforme necessário.
+ * 
+ * IMPORTANTE: 
+ * - Altere a senha padrão antes de usar em produção
+ * - Configure HTTPS em ambientes de produção
+ * - Restrinja IPs permitidos se necessário
+ */
+
+return [
+    // ========================================
+    // CONFIGURAÇÕES DE AUTENTICAÇÃO
+    // ========================================
+    'auth' => [
+        // Usuário administrador
+        'username' => 'admin',
+        
+        // Senha - ALTERE ANTES DE USAR EM PRODUÇÃO!
+        // Para gerar nova senha: password_hash('sua_senha', PASSWORD_DEFAULT)
+        'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // 'password'
+        
+        // Tempo limite da sessão (segundos)
+        'session_timeout' => 3600, // 1 hora
+        
+        // Máximo de tentativas de login
+        'max_login_attempts' => 5,
+        
+        // Tempo de bloqueio após tentativas falhas (segundos)
+        'lockout_duration' => 900, // 15 minutos
+    ],
+
+    // ========================================
+    // SERVIDORES MEMCACHE
+    // ========================================
+    'servers' => [
+        [
+            'host' => '127.0.0.1',
+            'port' => 11211,
+            'weight' => 1,
+            'name' => 'Servidor Local'
+        ],
+        
+        // Adicione mais servidores se necessário
+        /*
+        [
+            'host' => '192.168.1.100',
+            'port' => 11211,
+            'weight' => 2,
+            'name' => 'Servidor Cache 1'
+        ],
+        [
+            'host' => '192.168.1.101',
+            'port' => 11211,
+            'weight' => 1,
+            'name' => 'Servidor Cache 2'
+        ],
+        */
+    ],
+
+    // ========================================
+    // FILTROS DE PREFIXOS
+    // ========================================
+    'prefix_filters' => [
+        'app' => 'app_*',
+        'session' => 'sess_*',
+        'user' => 'user_*',
+        'page' => 'page_*',
+        'api' => 'api_*',
+        'cache' => 'cache_*',
+        'temp' => 'temp_*',
+        'all' => '*'
+    ],
+
+    // Prefixo padrão ao carregar a página
+    'default_prefix' => 'all',
+
+    // ========================================
+    // CONFIGURAÇÕES DE INTERFACE
+    // ========================================
+    'ui' => [
+        // Tema da interface (dark, light)
+        'theme' => 'dark',
+        
+        // Intervalo de auto-refresh (segundos, 0 = desabilitado)
+        'refresh_interval' => 30,
+        
+        // Itens por página na listagem de chaves
+        'items_per_page' => 50,
+        
+        // Mostrar valores de cache por padrão (pode ser lento com muitos dados)
+        'show_values' => false,
+        
+        // Mostrar gráficos (requer Chart.js)
+        'enable_charts' => true,
+        
+        // Idioma da interface
+        'language' => 'pt-BR',
+    ],
+
+    // ========================================
+    // CONFIGURAÇÕES DE SEGURANÇA
+    // ========================================
+    'security' => [
+        // Habilitar proteção CSRF
+        'enable_csrf' => true,
+        
+        // IPs permitidos (vazio = qualquer IP)
+        // Exemplo: ['192.168.1.0/24', '10.0.0.0/8', '172.16.0.100']
+        'allowed_ips' => [],
+        
+        // Forçar HTTPS (recomendado em produção)
+        'require_https' => false,
+        
+        // Habilitar logs de acesso
+        'enable_access_log' => true,
+        
+        // Arquivo de log de acesso
+        'access_log_file' => __DIR__ . '/access.log',
+        
+        // Tokens para API REST (opcional)
+        'api_tokens' => [
+            // 'your-secret-token-here',
+        ],
+    ],
+
+    // ========================================
+    // CONFIGURAÇÕES OPCACHE
+    // ========================================
+    'opcache' => [
+        // Habilitar monitoramento OpCache
+        'enable_monitoring' => true,
+        
+        // Mostrar lista de arquivos em cache
+        'show_file_list' => true,
+        
+        // Permitir reset do OpCache
+        'enable_reset' => true,
+        
+        // Mostrar scripts invalidados
+        'show_blacklist' => false,
+    ],
+
+    // ========================================
+    // ALERTAS E NOTIFICAÇÕES
+    // ========================================
+    'alerts' => [
+        // Limiar de uso de memória para alerta (%)
+        'memory_threshold' => 85,
+        
+        // Limiar de hit rate para alerta (%)
+        'hit_rate_threshold' => 80,
+        
+        // Intervalo de verificação de alertas (segundos)
+        'check_interval' => 300, // 5 minutos
+        
+        // Email para envio de alertas (opcional)
+        'alert_email' => '',
+        
+        // Webhook Slack para alertas (opcional)
+        'slack_webhook' => '',
+    ],
+
+    // ========================================
+    // CONFIGURAÇÕES AVANÇADAS
+    // ========================================
+    'advanced' => [
+        // Timeout para conexão Memcache (segundos)
+        'connection_timeout' => 5,
+        
+        // Habilitar compressão na listagem de chaves
+        'enable_compression' => false,
+        
+        // Tamanho máximo de valor para exibição (bytes)
+        'max_value_display_size' => 1024,
+        
+        // Cache local de estatísticas (segundos)
+        'stats_cache_duration' => 60,
+        
+        // Habilitar modo debug
+        'debug_mode' => false,
+    ],
+
+    // ========================================
+    // CONFIGURAÇÕES DE LIMPEZA AUTOMÁTICA
+    // ========================================
+    'auto_cleanup' => [
+        // Habilitar limpeza automática
+        'enabled' => false,
+        
+        // Horário da limpeza (formato cron: H:i)
+        'schedule_time' => '02:00',
+        
+        // Prefixos para limpeza automática
+        'cleanup_prefixes' => [
+            'temp_*',
+            'cache_expired_*',
+        ],
+        
+        // Manter logs de limpeza
+        'keep_cleanup_logs' => true,
+        
+        // Arquivo de log de limpeza
+        'cleanup_log_file' => __DIR__ . '/cleanup.log',
+    ],
+
+    // ========================================
+    // INTEGRAÇÕES EXTERNAS
+    // ========================================
+    'integrations' => [
+        // Prometheus metrics endpoint
+        'prometheus' => [
+            'enabled' => false,
+            'endpoint' => '/metrics',
+            'auth_token' => '',
+        ],
+        
+        // Grafana webhook
+        'grafana' => [
+            'enabled' => false,
+            'webhook_url' => '',
+            'api_key' => '',
+        ],
+        
+        // Zabbix monitoring
+        'zabbix' => [
+            'enabled' => false,
+            'server' => '',
+            'port' => 10051,
+            'hostname' => gethostname(),
+        ],
+    ],
+
+    // ========================================
+    // CONFIGURAÇÕES DE BACKUP
+    // ========================================
+    'backup' => [
+        // Habilitar backup automático de configurações
+        'enabled' => false,
+        
+        // Diretório de backup
+        'backup_dir' => __DIR__ . '/backups',
+        
+        // Manter backups por quantos dias
+        'retention_days' => 30,
+        
+        // Incluir dados de cache no backup (cuidado com o tamanho!)
+        'include_cache_data' => false,
+    ],
+];
