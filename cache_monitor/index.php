@@ -27,10 +27,28 @@ if (isset($_GET['prefix']) && isset($config['prefix_filters'][$_GET['prefix']]))
 
 // Inicializa Memcache
 $mem = new Memcache();
+$connection_error = '';
 if (isset($config['servers']) && is_array($config['servers'])) {
+    $connected_servers = 0;
     foreach ($config['servers'] as $srv) {
-        @$mem->connect($srv['host'], $srv['port']);
+        try {
+            if (@$mem->connect($srv['host'], $srv['port'])) {
+                $connected_servers++;
+            } else {
+                $connection_error .= "Falha ao conectar com {$srv['host']}:{$srv['port']}. ";
+            }
+        } catch (Exception $e) {
+            $connection_error .= "Erro de conexão com {$srv['host']}:{$srv['port']}: " . $e->getMessage() . ". ";
+        }
     }
+    
+    if ($connected_servers === 0) {
+        $connection_error = 'Nenhum servidor Memcache disponível. Verifique se os servidores estão rodando e as configurações estão corretas.';
+    } elseif ($connection_error) {
+        $connection_error = "Alguns servidores não estão disponíveis: $connection_error";
+    }
+} else {
+    $connection_error = 'Nenhum servidor Memcache configurado. Verifique o arquivo de configuração.';
 }
 
 // Logout

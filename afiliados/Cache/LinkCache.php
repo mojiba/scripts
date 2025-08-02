@@ -6,11 +6,13 @@ class LinkCache
 {
     protected $app;
     protected $driver;
+    protected $errorHandler;
 
     public function __construct(\XF\App $app)
     {
         $this->app = $app;
         $this->driver = $app->options()->hardmob_afiliados_cache_driver ?: 'file';
+        $this->errorHandler = $app->service('hardMOB\Afiliados:ErrorHandler');
     }
 
     public function get($key)
@@ -67,42 +69,57 @@ class LinkCache
 
     protected function getFromFile($key)
     {
-        $record = $this->app->db()->fetchRow(
-            'SELECT cache_value, expiry_date FROM xf_hardmob_affiliate_cache WHERE cache_key = ?',
-            $key
-        );
+        try {
+            $record = $this->app->db()->fetchRow(
+                'SELECT cache_value, expiry_date FROM xf_hardmob_affiliate_cache WHERE cache_key = ?',
+                $key
+            );
 
-        if (!$record)
-        {
+            if (!$record)
+            {
+                return null;
+            }
+
+            if ($record['expiry_date'] && $record['expiry_date'] < \XF::$time)
+            {
+                $this->deleteFromFile($key);
+                return null;
+            }
+
+            return json_decode($record['cache_value'], true);
+        } catch (\Exception $e) {
+            $this->errorHandler->logError('cache_database', 'Database cache read failed', ['error' => $e->getMessage()], $e);
             return null;
         }
-
-        if ($record['expiry_date'] && $record['expiry_date'] < \XF::$time)
-        {
-            $this->deleteFromFile($key);
-            return null;
-        }
-
-        return json_decode($record['cache_value'], true);
     }
 
     protected function setToFile($key, $value, $ttl = 0)
     {
-        $expiryDate = $ttl ? (\XF::$time + $ttl) : 0;
-        
-        $this->app->db()->insert('xf_hardmob_affiliate_cache', [
-            'cache_key' => $key,
-            'cache_value' => json_encode($value),
-            'expiry_date' => $expiryDate,
-            'created_date' => \XF::$time
-        ], false, 'cache_value = VALUES(cache_value), expiry_date = VALUES(expiry_date)');
+        try {
+            $expiryDate = $ttl ? (\XF::$time + $ttl) : 0;
+            
+            $this->app->db()->insert('xf_hardmob_affiliate_cache', [
+                'cache_key' => $key,
+                'cache_value' => json_encode($value),
+                'expiry_date' => $expiryDate,
+                'created_date' => \XF::$time
+            ], false, 'cache_value = VALUES(cache_value), expiry_date = VALUES(expiry_date)');
 
-        return true;
+            return true;
+        } catch (\Exception $e) {
+            $this->errorHandler->logError('cache_database', 'Database cache write failed', ['error' => $e->getMessage()], $e);
+            return false;
+        }
     }
 
     protected function deleteFromFile($key)
     {
-        return $this->app->db()->delete('xf_hardmob_affiliate_cache', 'cache_key = ?', $key);
+        try {
+            return $this->app->db()->delete('xf_hardmob_affiliate_cache', 'cache_key = ?', $key);
+        } catch (\Exception $e) {
+            $this->errorHandler->logError('cache_database', 'Database cache delete failed', ['error' => $e->getMessage()], $e);
+            return false;
+        }
     }
 
     protected function clearFile()
@@ -117,6 +134,8 @@ class LinkCache
             $value = $redis->get('hardmob_afiliados:' . $key);
             return $value ? json_decode($value, true) : null;
         } catch (\Exception $e) {
+            $this->errorHandler->logError('cache_redis_operation', 'Redis get operation failed', ['error' => $e->getMessage()], $e);
+            $this->errorHandler->logInfo('cache_fallback', 'Using database cache as fallback');
             return $this->getFromFile($key); // Fallback
         }
     }
@@ -133,6 +152,8 @@ class LinkCache
                 return $redis->set($redisKey, json_encode($value));
             }
         } catch (\Exception $e) {
+            $this->errorHandler->logError('cache_redis_operation', 'Redis set operation failed', ['error' => $e->getMessage()], $e);
+            $this->errorHandler->logInfo('cache_fallback', 'Using database cache as fallback');
             return $this->setToFile($key, $value, $ttl); // Fallback
         }
     }
@@ -162,17 +183,30 @@ class LinkCache
     {
         $config = $this->app->config('cache');
         if (!isset($config['redis'])) {
+            $this->errorHandler->logError('cache_redis_connection', 'Redis configuration not found');
             throw new \Exception('Redis configuration not found');
         }
 
-        $redis = new \Redis();
-        $redis->connect($config['redis']['host'], $config['redis']['port']);
-        
-        if (!empty($config['redis']['password'])) {
-            $redis->auth($config['redis']['password']);
-        }
+        try {
+            $redis = new \Redis();
+            $connected = $redis->connect($config['redis']['host'], $config['redis']['port']);
+            
+            if (!$connected) {
+                throw new \Exception('Could not connect to Redis server');
+            }
+            
+            if (!empty($config['redis']['password'])) {
+                $auth = $redis->auth($config['redis']['password']);
+                if (!$auth) {
+                    throw new \Exception('Redis authentication failed');
+                }
+            }
 
-        return $redis;
+            return $redis;
+        } catch (\Exception $e) {
+            $this->errorHandler->logError('cache_redis_connection', 'Failed to connect to Redis', ['error' => $e->getMessage()], $e);
+            throw $e;
+        }
     }
 
     public function getStats()

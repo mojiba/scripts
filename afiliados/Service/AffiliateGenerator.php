@@ -6,6 +6,13 @@ use XF\Service\AbstractService;
 
 class AffiliateGenerator extends AbstractService
 {
+    protected $errorHandler;
+
+    public function __construct(\XF\App $app)
+    {
+        parent::__construct($app);
+        $this->errorHandler = $app->service('hardMOB\Afiliados:ErrorHandler');
+    }
     public function processText($text, $userId = null)
     {
         // Procura por placeholders no formato {{slug:/produtos/123}}
@@ -18,36 +25,55 @@ class AffiliateGenerator extends AbstractService
 
     protected function generateAffiliateLink($slug, $userId = null)
     {
-        $cache = $this->app->service('hardMOB\Afiliados:Cache');
-        $cacheKey = 'affiliate_link_' . md5($slug);
-        
-        // Tenta buscar no cache primeiro
-        $cachedLink = $cache->get($cacheKey);
-        if ($cachedLink) {
-            return $this->buildPublicLink($cachedLink['store_id'], $slug);
+        try {
+            $cache = $this->app->service('hardMOB\Afiliados:Cache');
+            $cacheKey = 'affiliate_link_' . md5($slug);
+            
+            // Tenta buscar no cache primeiro
+            $cachedLink = $cache->get($cacheKey);
+            if ($cachedLink) {
+                return $this->buildPublicLink($cachedLink['store_id'], $slug);
+            }
+
+            // Determina a loja baseada no domínio do slug
+            $store = $this->detectStoreFromSlug($slug);
+            if (!$store) {
+                $this->errorHandler->logError('store_not_found', 'No store found for slug', ['slug' => $slug]);
+                return $slug; // Retorna o slug original se não conseguir detectar a loja
+            }
+
+            // Verifica se a loja tem código de afiliado
+            if (empty($store->affiliate_code)) {
+                $this->errorHandler->logError('affiliate_code_missing', 'Affiliate code missing for store', ['store' => $store->name]);
+                return $slug;
+            }
+
+            // Gera o link de afiliado
+            $connector = $store->getConnectorClass();
+            if (!$connector) {
+                $this->errorHandler->logError('connector_missing', 'Store connector not found', ['store' => $store->name]);
+                return $slug;
+            }
+
+            if (!$connector->validateSlug($slug)) {
+                $this->errorHandler->logError('invalid_slug', 'Invalid slug format', ['slug' => $slug]);
+                return $slug;
+            }
+
+            $affiliateUrl = $connector->generateAffiliateUrl($slug);
+            
+            // Armazena no cache
+            $cache->set($cacheKey, [
+                'store_id' => $store->store_id,
+                'affiliate_url' => $affiliateUrl
+            ], $this->app->options()->hardmob_afiliados_cache_ttl ?: 3600);
+
+            return $this->buildPublicLink($store->store_id, $slug);
+            
+        } catch (\Exception $e) {
+            $this->errorHandler->logError('link_generation_failed', 'Link generation failed', ['slug' => $slug, 'error' => $e->getMessage()], $e);
+            return $slug; // Fallback to original slug
         }
-
-        // Determina a loja baseada no domínio do slug
-        $store = $this->detectStoreFromSlug($slug);
-        if (!$store) {
-            return $slug; // Retorna o slug original se não conseguir detectar a loja
-        }
-
-        // Gera o link de afiliado
-        $connector = $store->getConnectorClass();
-        if (!$connector->validateSlug($slug)) {
-            return $slug;
-        }
-
-        $affiliateUrl = $connector->generateAffiliateUrl($slug);
-        
-        // Armazena no cache
-        $cache->set($cacheKey, [
-            'store_id' => $store->store_id,
-            'affiliate_url' => $affiliateUrl
-        ], $this->app->options()->hardmob_afiliados_cache_ttl ?: 3600);
-
-        return $this->buildPublicLink($store->store_id, $slug);
     }
 
     protected function detectStoreFromSlug($slug)
@@ -87,32 +113,56 @@ class AffiliateGenerator extends AbstractService
 
     public function preGenerateLinks()
     {
-        $storeRepo = $this->repository('hardMOB\Afiliados:Store');
-        $stores = $storeRepo->findActiveStores()->fetch();
-        $cache = $this->app->service('hardMOB\Afiliados:Cache');
-        
-        $generatedCount = 0;
-        
-        foreach ($stores as $store) {
-            $connector = $store->getConnectorClass();
-            $testSlugs = $this->getTestSlugs($store);
+        try {
+            $storeRepo = $this->repository('hardMOB\Afiliados:Store');
+            $stores = $storeRepo->findActiveStores()->fetch();
             
-            foreach ($testSlugs as $slug) {
-                if ($connector->validateSlug($slug)) {
-                    $cacheKey = 'affiliate_link_' . md5($slug);
-                    $affiliateUrl = $connector->generateAffiliateUrl($slug);
+            if ($stores->count() === 0) {
+                $this->errorHandler->logWarning('cache_unavailable', 'No active stores found for pre-generation');
+                return 0;
+            }
+
+            $cache = $this->app->service('hardMOB\Afiliados:Cache');
+            $generatedCount = 0;
+            
+            foreach ($stores as $store) {
+                try {
+                    $connector = $store->getConnectorClass();
+                    if (!$connector) {
+                        $this->errorHandler->logError('connector_missing', 'Store connector not found', ['store' => $store->name]);
+                        continue;
+                    }
+
+                    $testSlugs = $this->getTestSlugs($store);
                     
-                    $cache->set($cacheKey, [
-                        'store_id' => $store->store_id,
-                        'affiliate_url' => $affiliateUrl
-                    ], $this->app->options()->hardmob_afiliados_cache_ttl ?: 3600);
-                    
-                    $generatedCount++;
+                    foreach ($testSlugs as $slug) {
+                        try {
+                            if ($connector->validateSlug($slug)) {
+                                $cacheKey = 'affiliate_link_' . md5($slug);
+                                $affiliateUrl = $connector->generateAffiliateUrl($slug);
+                                
+                                $cache->set($cacheKey, [
+                                    'store_id' => $store->store_id,
+                                    'affiliate_url' => $affiliateUrl
+                                ], $this->app->options()->hardmob_afiliados_cache_ttl ?: 3600);
+                                
+                                $generatedCount++;
+                            }
+                        } catch (\Exception $e) {
+                            $this->errorHandler->logError('link_generation_failed', 'Failed to pre-generate link', ['slug' => $slug, 'store' => $store->name, 'error' => $e->getMessage()], $e);
+                        }
+                    }
+                } catch (\Exception $e) {
+                    $this->errorHandler->logError('link_generation_failed', 'Failed to process store for pre-generation', ['store' => $store->name, 'error' => $e->getMessage()], $e);
                 }
             }
+            
+            return $generatedCount;
+            
+        } catch (\Exception $e) {
+            $this->errorHandler->logError('link_generation_failed', 'Pre-generation process failed', ['error' => $e->getMessage()], $e);
+            return 0;
         }
-        
-        return $generatedCount;
     }
 
     protected function getTestSlugs($store)

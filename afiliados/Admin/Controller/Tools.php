@@ -91,4 +91,45 @@ class Tools extends AbstractController
 
         return $this->view('hardMOB\Afiliados:Tools\Stats', 'hardmob_afiliados_stats', $viewParams);
     }
+
+    public function actionErrorLogs()
+    {
+        // Get recent XenForo errors related to Afiliados
+        $db = $this->app->db();
+        
+        $errors = $db->fetchAll('
+            SELECT error_id, message, filename, line, trace_string, request_url, request_state, user_id, ip_address, error_date
+            FROM xf_error_log
+            WHERE message LIKE ?
+            ORDER BY error_date DESC
+            LIMIT 50
+        ', ['%[Afiliados]%']);
+
+        $viewParams = [
+            'errors' => $errors,
+            'errorCount' => count($errors)
+        ];
+
+        return $this->view('hardMOB\Afiliados:Tools\ErrorLogs', 'hardmob_afiliados_error_logs', $viewParams);
+    }
+
+    public function actionTestErrorHandling()
+    {
+        if ($this->isPost()) {
+            $errorHandler = $this->service('hardMOB\Afiliados:ErrorHandler');
+            
+            // Test different types of errors
+            $errorHandler->logError('cache_redis_connection', 'Test Redis connection error');
+            $errorHandler->logError('invalid_slug', 'Test invalid slug error', ['slug' => 'test-slug-123']);
+            $errorHandler->logWarning('cache_unavailable', 'Test cache unavailable warning');
+            $errorHandler->logInfo('cache_fallback', 'Test cache fallback info');
+            
+            $errors = $errorHandler->getFormattedErrors();
+            $warnings = $errorHandler->getFormattedWarnings();
+            
+            return $this->message('Teste de error handling concluído. Verifique os logs do sistema para ver as mensagens geradas.');
+        }
+
+        return $this->view('hardMOB\Afiliados:Tools\TestErrorHandling', 'hardmob_afiliados_test_error_handling');
+    }
 }
