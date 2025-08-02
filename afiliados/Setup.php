@@ -46,7 +46,7 @@ class Setup extends AbstractSetup
                 $table->addColumn('created_date', 'int')->setDefault(0);
                 $table->addColumn('modified_date', 'int')->setDefault(0);
                 $table->addPrimaryKey('store_id');
-                $table->addUniqueKey(['name'], 'name');
+                $table->addUniqueKey(['name', 'domain'], 'name_domain');
                 $table->addKey(['status'], 'status');
             });
         }
@@ -124,6 +124,27 @@ class Setup extends AbstractSetup
         if ($sm->tableExists('xf_hardmob_affiliate_cache'))
         {
             $sm->dropTable('xf_hardmob_affiliate_cache');
+        }
+    }
+    
+    public function upgrade1000400Step1()
+    {
+        $this->adjustStoreUniqueConstraint();
+    }
+    
+    protected function adjustStoreUniqueConstraint()
+    {
+        $sm = $this->schemaManager();
+        
+        if ($sm->tableExists('xf_hardmob_affiliate_stores'))
+        {
+            $sm->alterTable('xf_hardmob_affiliate_stores', function(Alter $table)
+            {
+                // Remove the old unique constraint on 'name' only
+                $table->dropIndexes(['name']);
+                // Add new composite unique constraint on 'name' and 'domain'
+                $table->addUniqueKey(['name', 'domain'], 'name_domain');
+            });
         }
     }
     
