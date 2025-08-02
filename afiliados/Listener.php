@@ -3,6 +3,7 @@
 namespace hardMOB\Afiliados;
 
 use XF\Template\Templater;
+use hardMOB\Afiliados\Helper\SecurityValidator;
 
 class Listener
 {
@@ -41,9 +42,19 @@ class Listener
         // Adiciona função personalizada para processar links de afiliados
         $templater->addFunction('affiliate_links', function($templater, &$escape, $text, $userId = null)
         {
-            $affiliateGenerator = \XF::app()->service('hardMOB\Afiliados:AffiliateGenerator');
-            $escape = false;
-            return $affiliateGenerator->processText($text, $userId);
+            try {
+                $affiliateGenerator = \XF::app()->service('hardMOB\Afiliados:AffiliateGenerator');
+                $securityValidator = new SecurityValidator(\XF::app());
+                
+                // Sanitize output for template to prevent XSS
+                $processedText = $affiliateGenerator->processText($text, $userId);
+                $escape = false; // We're handling escaping in the security validator
+                
+                return $securityValidator->sanitizeOutput($processedText);
+            } catch (\Exception $e) {
+                \XF::logError('Template affiliate link processing error: ' . $e->getMessage());
+                return htmlspecialchars($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            }
         });
     }
 
@@ -53,21 +64,38 @@ class Listener
             return;
         }
 
-        // Processa links de afiliados no conteúdo renderizado
-        $userId = isset($context['user']) ? $context['user']->user_id : null;
-        $affiliateGenerator = \XF::app()->service('hardMOB\Afiliados:AffiliateGenerator');
-        $finalOutput = $affiliateGenerator->processText($finalOutput, $userId);
+        try {
+            // Processa links de afiliados no conteúdo renderizado
+            $userId = isset($context['user']) ? $context['user']->user_id : null;
+            $affiliateGenerator = \XF::app()->service('hardMOB\Afiliados:AffiliateGenerator');
+            $securityValidator = new SecurityValidator(\XF::app());
+            
+            $processedOutput = $affiliateGenerator->processText($finalOutput, $userId);
+            $finalOutput = $securityValidator->sanitizeOutput($processedOutput);
+        } catch (\Exception $e) {
+            \XF::logError('BBCode affiliate link processing error: ' . $e->getMessage());
+            // Keep original output if processing fails
+        }
     }
 
     public static function criteriaUser($rule, array $data, \XF\Entity\User $user, &$returnValue)
     {
         switch ($rule) {
             case 'hardmob_affiliate_clicks':
+                // Validate user ID and clicks parameter
+                $userId = filter_var($user->user_id, FILTER_VALIDATE_INT);
+                $clicksThreshold = isset($data['clicks']) ? filter_var($data['clicks'], FILTER_VALIDATE_INT) : 0;
+                
+                if (!$userId || $clicksThreshold === false) {
+                    $returnValue = false;
+                    break;
+                }
+
                 $clickCount = \XF::db()->fetchOne(
                     'SELECT COUNT(*) FROM xf_hardmob_affiliate_clicks WHERE user_id = ?',
-                    $user->user_id
+                    $userId
                 );
-                $returnValue = ($clickCount >= $data['clicks']);
+                $returnValue = ((int) $clickCount >= $clicksThreshold);
                 break;
         }
     }

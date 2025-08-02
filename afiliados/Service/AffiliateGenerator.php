@@ -3,73 +3,110 @@
 namespace hardMOB\Afiliados\Service;
 
 use XF\Service\AbstractService;
+use hardMOB\Afiliados\Helper\SecurityValidator;
 
 class AffiliateGenerator extends AbstractService
 {
+    protected $securityValidator;
+
+    public function __construct(\XF\App $app, $request = null)
+    {
+        parent::__construct($app, $request);
+        $this->securityValidator = new SecurityValidator($app);
+    }
+
     public function processText($text, $userId = null)
     {
-        // Procura por placeholders no formato {{slug:/produtos/123}}
-        $pattern = '/\{\{slug:(.*?)\}\}/';
-        
-        return preg_replace_callback($pattern, function($matches) use ($userId) {
-            return $this->generateAffiliateLink($matches[1], $userId);
-        }, $text);
+        try {
+            // Validate and sanitize input text
+            $sanitizedText = $this->securityValidator->validateText($text);
+            
+            // Use safe regex pattern to prevent ReDoS attacks
+            $pattern = SecurityValidator::PLACEHOLDER_PATTERN;
+            
+            return preg_replace_callback($pattern, function($matches) use ($userId) {
+                // Validate the slug from the match
+                $slug = $this->securityValidator->validateSlug($matches[1]);
+                if (empty($slug)) {
+                    return $matches[0]; // Return original if validation fails
+                }
+                return $this->generateAffiliateLink($slug, $userId);
+            }, $sanitizedText);
+        } catch (\InvalidArgumentException $e) {
+            // Log security violation attempt
+            \XF::logError('Affiliate link processing security violation: ' . $e->getMessage());
+            return htmlspecialchars($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        }
     }
 
     protected function generateAffiliateLink($slug, $userId = null)
     {
-        $cache = $this->app->service('hardMOB\Afiliados:Cache');
-        $cacheKey = 'affiliate_link_' . md5($slug);
-        
-        // Tenta buscar no cache primeiro
-        $cachedLink = $cache->get($cacheKey);
-        if ($cachedLink) {
-            return $this->buildPublicLink($cachedLink['store_id'], $slug);
+        try {
+            // Validate and sanitize the slug
+            $sanitizedSlug = $this->securityValidator->validateSlug($slug);
+            if (empty($sanitizedSlug)) {
+                return htmlspecialchars($slug, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            }
+
+            $cache = $this->app->service('hardMOB\Afiliados:Cache');
+            
+            // Generate safe cache key
+            $cacheKey = $this->securityValidator->generateSafeCacheKey('affiliate_link', $sanitizedSlug);
+            
+            // Tenta buscar no cache primeiro
+            $cachedLink = $cache->get($cacheKey);
+            if ($cachedLink) {
+                return $this->buildPublicLink($cachedLink['store_id'], $sanitizedSlug);
+            }
+
+            // Determina a loja baseada no domínio do slug
+            $store = $this->detectStoreFromSlug($sanitizedSlug);
+            if (!$store) {
+                return htmlspecialchars($sanitizedSlug, ENT_QUOTES | ENT_HTML5, 'UTF-8'); // Return sanitized original if no store detected
+            }
+
+            // Gera o link de afiliado
+            $connector = $store->getConnectorClass();
+            if (!$connector->validateSlug($sanitizedSlug)) {
+                return htmlspecialchars($sanitizedSlug, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            }
+
+            $affiliateUrl = $connector->generateAffiliateUrl($sanitizedSlug);
+            
+            // Armazena no cache
+            $cache->set($cacheKey, [
+                'store_id' => $store->store_id,
+                'affiliate_url' => $affiliateUrl
+            ], $this->app->options()->hardmob_afiliados_cache_ttl ?: 3600);
+
+            return $this->buildPublicLink($store->store_id, $sanitizedSlug);
+        } catch (\Exception $e) {
+            // Log error and return sanitized input
+            \XF::logError('Affiliate link generation error: ' . $e->getMessage());
+            return htmlspecialchars($slug, ENT_QUOTES | ENT_HTML5, 'UTF-8');
         }
-
-        // Determina a loja baseada no domínio do slug
-        $store = $this->detectStoreFromSlug($slug);
-        if (!$store) {
-            return $slug; // Retorna o slug original se não conseguir detectar a loja
-        }
-
-        // Gera o link de afiliado
-        $connector = $store->getConnectorClass();
-        if (!$connector->validateSlug($slug)) {
-            return $slug;
-        }
-
-        $affiliateUrl = $connector->generateAffiliateUrl($slug);
-        
-        // Armazena no cache
-        $cache->set($cacheKey, [
-            'store_id' => $store->store_id,
-            'affiliate_url' => $affiliateUrl
-        ], $this->app->options()->hardmob_afiliados_cache_ttl ?: 3600);
-
-        return $this->buildPublicLink($store->store_id, $slug);
     }
 
     protected function detectStoreFromSlug($slug)
     {
         $storeRepo = $this->repository('hardMOB\Afiliados:Store');
         
-        // Se o slug contém um domínio, tenta detectar pela URL
-        if (preg_match('/https?:\/\/([^\/]+)/', $slug, $matches)) {
-            $domain = $matches[1];
+        // Se o slug contém um domínio, tenta detectar pela URL usando validação segura
+        $domain = $this->securityValidator->extractDomain($slug);
+        if (!empty($domain)) {
             return $storeRepo->getStoreByDomain($domain);
         }
         
-        // Detecta por padrões conhecidos
-        if (strpos($slug, 'amazon.') !== false || preg_match('/^[A-Z0-9]{10}$/', $slug)) {
+        // Detecta por padrões conhecidos usando validação segura
+        if (strpos($slug, 'amazon.') !== false || $this->securityValidator->validateAmazonASIN($slug)) {
             return $storeRepo->getStoreByDomain('amazon.com.br');
         }
         
-        if (strpos($slug, 'mercadolivre.') !== false || strpos($slug, 'MLB-') === 0) {
+        if (strpos($slug, 'mercadolivre.') !== false || $this->securityValidator->validateMLBId($slug)) {
             return $storeRepo->getStoreByDomain('mercadolivre.com.br');
         }
         
-        if (strpos($slug, 'shopee.') !== false || preg_match('/.*-i\.\d+\.\d+/', $slug)) {
+        if (strpos($slug, 'shopee.') !== false || $this->securityValidator->validateShopeeSlug($slug)) {
             return $storeRepo->getStoreByDomain('shopee.com.br');
         }
 
@@ -79,9 +116,15 @@ class AffiliateGenerator extends AbstractService
 
     protected function buildPublicLink($storeId, $slug)
     {
+        // Sanitize slug before encoding
+        $sanitizedSlug = $this->securityValidator->validateSlug($slug);
+        if (empty($sanitizedSlug)) {
+            return '';
+        }
+
         return $this->app->router('public')->buildLink('canonical:affiliate', [
-            'store_id' => $storeId,
-            'slug' => base64_encode($slug)
+            'store_id' => (int) $storeId,
+            'slug' => base64_encode($sanitizedSlug)
         ]);
     }
 
