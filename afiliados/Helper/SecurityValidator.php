@@ -69,6 +69,11 @@ class SecurityValidator
         // Remove null bytes and control characters
         $slug = preg_replace('/[\x00-\x1F\x7F]/', '', $slug);
         
+        // Check for dangerous schemes
+        if (preg_match('/^(javascript|data|file|ftp|mailto):/i', $slug)) {
+            return '';
+        }
+        
         // If it looks like a URL, validate it properly
         if (preg_match('/^https?:\/\//', $slug)) {
             return $this->validateUrl($slug);
@@ -94,6 +99,14 @@ class SecurityValidator
             throw new \InvalidArgumentException('URL too long');
         }
 
+        // Remove null bytes and control characters
+        $url = preg_replace('/[\x00-\x1F\x7F]/', '', $url);
+
+        // Check for dangerous schemes first
+        if (preg_match('/^(javascript|data|file|ftp|mailto):/i', $url)) {
+            return '';
+        }
+
         // Basic URL validation
         $cleanUrl = filter_var($url, FILTER_VALIDATE_URL);
         if (!$cleanUrl) {
@@ -113,6 +126,14 @@ class SecurityValidator
         // Validate hostname
         if (!filter_var($parsed['host'], FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME)) {
             return '';
+        }
+
+        // Additional check for encoded dangerous schemes in query params
+        if (isset($parsed['query'])) {
+            $decodedQuery = urldecode($parsed['query']);
+            if (preg_match('/javascript:|data:|file:/i', $decodedQuery)) {
+                return '';
+            }
         }
 
         return $cleanUrl;

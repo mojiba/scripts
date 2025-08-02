@@ -11,12 +11,18 @@ class Click extends Repository
     {
         $finder = $this->finder('hardMOB\Afiliados:Click');
         
-        if ($startDate) {
-            $finder->where('click_date', '>=', $startDate);
+        if ($startDate !== null) {
+            $startDate = filter_var($startDate, FILTER_VALIDATE_INT);
+            if ($startDate) {
+                $finder->where('click_date', '>=', $startDate);
+            }
         }
         
-        if ($endDate) {
-            $finder->where('click_date', '<=', $endDate);
+        if ($endDate !== null) {
+            $endDate = filter_var($endDate, FILTER_VALIDATE_INT);
+            if ($endDate) {
+                $finder->where('click_date', '<=', $endDate);
+            }
         }
         
         return $finder->setDefaultOrder('click_date', 'DESC');
@@ -24,13 +30,26 @@ class Click extends Repository
 
     public function getClickStatsByStore($storeId = null, $period = 'month')
     {
+        // Validate inputs
+        if ($storeId !== null) {
+            $storeId = filter_var($storeId, FILTER_VALIDATE_INT);
+            if (!$storeId) {
+                throw new \InvalidArgumentException('Invalid store ID');
+            }
+        }
+
+        $allowedPeriods = ['day', 'week', 'month', 'year'];
+        if (!in_array($period, $allowedPeriods)) {
+            $period = 'month';
+        }
+
         $startDate = $this->getPeriodStartDate($period);
         
         $finder = $this->finder('hardMOB\Afiliados:Click')
-            ->where('click_date', '>=', $startDate);
+            ->where('click_date', '>=', (int) $startDate);
             
         if ($storeId) {
-            $finder->where('store_id', $storeId);
+            $finder->where('store_id', (int) $storeId);
         }
         
         return $finder
@@ -41,16 +60,35 @@ class Click extends Repository
 
     public function getTopClickedSlugs($limit = 10, $storeId = null, $period = 'month')
     {
+        // Validate inputs
+        $limit = filter_var($limit, FILTER_VALIDATE_INT);
+        if (!$limit || $limit > 100) {
+            $limit = 10; // Default safe limit
+        }
+
+        if ($storeId !== null) {
+            $storeId = filter_var($storeId, FILTER_VALIDATE_INT);
+            if (!$storeId) {
+                throw new \InvalidArgumentException('Invalid store ID');
+            }
+        }
+
+        $allowedPeriods = ['day', 'week', 'month', 'year'];
+        if (!in_array($period, $allowedPeriods)) {
+            $period = 'month';
+        }
+
         $startDate = $this->getPeriodStartDate($period);
         
         $conditions = ['click_date >= ?'];
-        $values = [$startDate];
+        $values = [(int) $startDate];
         
         if ($storeId) {
             $conditions[] = 'store_id = ?';
-            $values[] = $storeId;
+            $values[] = (int) $storeId;
         }
         
+        // Use parameterized query with validated inputs
         return $this->db()->fetchAll('
             SELECT slug, store_id, COUNT(*) as click_count
             FROM xf_hardmob_affiliate_clicks
@@ -58,7 +96,7 @@ class Click extends Repository
             GROUP BY slug, store_id
             ORDER BY click_count DESC
             LIMIT ?
-        ', array_merge($values, [$limit]));
+        ', array_merge($values, [(int) $limit]));
     }
 
     protected function getPeriodStartDate($period)
