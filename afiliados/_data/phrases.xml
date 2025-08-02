@@ -38,4 +38,18 @@
     <phrase title="option_explain.hardmob_afiliados_ga_tracking_id" version_id="1000000" version_string="1.0.0"><![CDATA[ID do Google Analytics para tracking de cliques (ex: UA-XXXXXXX-X ou G-XXXXXXXXXX).]]></phrase>
     <phrase title="option_group.hardmob_afiliados" version_id="1000000" version_string="1.0.0"><![CDATA[hardMOB Afiliados]]></phrase>
     <phrase title="option_group_description.hardmob_afiliados" version_id="1000000" version_string="1.0.0"><![CDATA[Configurações do sistema de afiliados.]]></phrase>
+    
+    <!-- Error Messages -->
+    <phrase title="hardmob_afiliados_error_cache_redis_connection" version_id="1000000" version_string="1.0.0"><![CDATA[Erro ao conectar com Redis. Usando cache de arquivo como alternativa.]]></phrase>
+    <phrase title="hardmob_afiliados_error_cache_redis_operation" version_id="1000000" version_string="1.0.0"><![CDATA[Falha na operação Redis: {error}. Usando fallback de arquivo.]]></phrase>
+    <phrase title="hardmob_afiliados_error_cache_database" version_id="1000000" version_string="1.0.0"><![CDATA[Erro no banco de dados do cache: {error}]]></phrase>
+    <phrase title="hardmob_afiliados_error_link_generation_failed" version_id="1000000" version_string="1.0.0"><![CDATA[Falha ao gerar link de afiliado para '{slug}'. Verifique a configuração da loja.]]></phrase>
+    <phrase title="hardmob_afiliados_error_store_not_found" version_id="1000000" version_string="1.0.0"><![CDATA[Loja não encontrada para o produto '{slug}'. Verifique se a loja está configurada e ativa.]]></phrase>
+    <phrase title="hardmob_afiliados_error_invalid_slug" version_id="1000000" version_string="1.0.0"><![CDATA[Formato de produto inválido: '{slug}'. Verifique se o link está correto.]]></phrase>
+    <phrase title="hardmob_afiliados_error_tracking_failed" version_id="1000000" version_string="1.0.0"><![CDATA[Falha ao registrar clique: {error}. O redirecionamento funcionará normalmente.]]></phrase>
+    <phrase title="hardmob_afiliados_error_analytics_failed" version_id="1000000" version_string="1.0.0"><![CDATA[Erro ao enviar dados para Google Analytics: {error}]]></phrase>
+    <phrase title="hardmob_afiliados_warning_cache_unavailable" version_id="1000000" version_string="1.0.0"><![CDATA[Sistema de cache temporariamente indisponível. Links serão gerados em tempo real.]]></phrase>
+    <phrase title="hardmob_afiliados_info_cache_fallback" version_id="1000000" version_string="1.0.0"><![CDATA[Cache Redis indisponível, usando cache de banco de dados.]]></phrase>
+    <phrase title="hardmob_afiliados_error_connector_missing" version_id="1000000" version_string="1.0.0"><![CDATA[Conector da loja '{store}' não encontrado. Contacte o administrador.]]></phrase>
+    <phrase title="hardmob_afiliados_error_affiliate_code_missing" version_id="1000000" version_string="1.0.0"><![CDATA[Código de afiliado não configurado para a loja '{store}'.]]></phrase>
 </phrases>
