@@ -30,6 +30,118 @@ class Setup extends AbstractSetup
         $this->createCacheTable();
     }
 
+    public function installStep4()
+    {
+        // Criação do grupo de opções e opções
+        $this->createOptionGroup();
+        $this->createAdminNavigation();
+    }
+
+    // Método de atualização para a versão 1.0.8
+    public function upgrade1000800Step1()
+    {
+        // Cria o grupo de opções caso ainda não exista
+        $this->createOptionGroup();
+    }
+
+    public function upgrade1000800Step2()
+    {
+        // Cria a navegação de admin caso ainda não exista
+        $this->createAdminNavigation();
+    }
+
+    protected function createOptionGroup()
+    {
+        $optionGroup = \XF::finder('XF:OptionGroup')
+            ->where('group_id', '=', 'hardMOB_afiliados')
+            ->fetchOne();
+            
+        if (!$optionGroup)
+        {
+            $this->db()->insert('xf_option_group', [
+                'group_id' => 'hardMOB_afiliados',
+                'display_order' => 1000,
+                'debug_only' => 0
+            ]);
+            
+            $this->app()->addDefaultPhrase('option_group_hardMOB_afiliados', 'Sistema de Afiliados');
+            $this->app()->addDefaultPhrase('option_group_hardMOB_afiliados_description', 'Configure as opções do sistema de afiliados');
+            
+            // Adiciona opção para ativar/desativar o sistema
+            $this->db()->insert('xf_option', [
+                'option_id' => 'hardMOB_afiliados_enabled',
+                'option_value' => 1,
+                'default_value' => 1,
+                'edit_format' => 'onoff',
+                'edit_format_params' => '',
+                'data_type' => 'boolean',
+                'sub_options' => '',
+                'validation_class' => '',
+                'validation_method' => '',
+                'advanced' => 0,
+                'addon_id' => 'hardMOB/Afiliados'
+            ]);
+            
+            $this->db()->insert('xf_option_group_relation', [
+                'option_id' => 'hardMOB_afiliados_enabled',
+                'group_id' => 'hardMOB_afiliados',
+                'display_order' => 10
+            ]);
+            
+            $this->app()->addDefaultPhrase('option_hardMOB_afiliados_enabled', 'Ativar Sistema de Afiliados');
+            $this->app()->addDefaultPhrase('option_hardMOB_afiliados_enabled_explain', 'Habilita ou desabilita todo o sistema de afiliados');
+            
+            // Adiciona opção para domínios de afiliados
+            $defaultDomains = json_encode(['amazon.com.br', 'magazineluiza.com.br', 'kabum.com.br']);
+            
+            $this->db()->insert('xf_option', [
+                'option_id' => 'hardMOB_afiliados_domains',
+                'option_value' => $defaultDomains,
+                'default_value' => $defaultDomains,
+                'edit_format' => 'textarea',
+                'edit_format_params' => json_encode(['rows' => 6]),
+                'data_type' => 'array',
+                'sub_options' => '',
+                'validation_class' => '',
+                'validation_method' => '',
+                'advanced' => 0,
+                'addon_id' => 'hardMOB/Afiliados'
+            ]);
+            
+            $this->db()->insert('xf_option_group_relation', [
+                'option_id' => 'hardMOB_afiliados_domains',
+                'group_id' => 'hardMOB_afiliados',
+                'display_order' => 20
+            ]);
+            
+            $this->app()->addDefaultPhrase('option_hardMOB_afiliados_domains', 'Domínios de Afiliados');
+            $this->app()->addDefaultPhrase('option_hardMOB_afiliados_domains_explain', 'Lista de domínios que serão convertidos em links de afiliados (um por linha)');
+        }
+    }
+
+    protected function createAdminNavigation()
+    {
+        $adminNavigation = \XF::finder('XF:AdminNavigation')
+            ->where('navigation_id', '=', 'hardMOB_afiliados')
+            ->fetchOne();
+            
+        if (!$adminNavigation)
+        {
+            $this->db()->insert('xf_admin_navigation', [
+                'navigation_id' => 'hardMOB_afiliados',
+                'parent_navigation_id' => 'setup',
+                'display_order' => 1000,
+                'link' => 'options/groups/hardMOB_afiliados',
+                'icon' => 'fa-link',
+                'admin_permission_id' => 'option',
+                'debug_only' => 0,
+                'hide_no_children' => 0
+            ]);
+            
+            $this->app()->addDefaultPhrase('admin_navigation.hardMOB_afiliados', 'Sistema de Afiliados');
+        }
+    }
+
     protected function createStoresTable()
     {
         $sm = $this->schemaManager();
@@ -125,6 +237,17 @@ class Setup extends AbstractSetup
         {
             $sm->dropTable('xf_hardmob_affiliate_cache');
         }
+    }
+
+    public function uninstallStep4()
+    {
+        // Remove opções e grupo de opções
+        $this->db()->delete('xf_option', "option_id LIKE 'hardMOB_afiliados_%'");
+        $this->db()->delete('xf_option_group_relation', "group_id = 'hardMOB_afiliados'");
+        $this->db()->delete('xf_option_group', "group_id = 'hardMOB_afiliados'");
+        
+        // Remove navegação admin
+        $this->db()->delete('xf_admin_navigation', "navigation_id = 'hardMOB_afiliados'");
     }
     
     public function preInstall()

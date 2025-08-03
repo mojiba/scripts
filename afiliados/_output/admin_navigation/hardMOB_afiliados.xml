@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<admin_navigation>
+  <navigation navigation_id="hardMOB_afiliados" parent_navigation_id="setup" display_order="1000" link="options/groups/hardMOB_afiliados" icon="fa-link" admin_permission="option" debug_only="0" hide_no_children="0">
+    <title>Sistema de Afiliados</title>
+  </navigation>
+</admin_navigation>
