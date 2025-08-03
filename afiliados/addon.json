@@ -1,16 +1,17 @@
 {
     "legacy_addon_id": "hardMOB_Afiliados",
-    "title": "Sistema de Afiliados",
-    "description": "Sistema de afiliados para conversão automática de links",
-    "version_id": 1001100,
-    "version_string": "1.0.11",
+    "title": "Sistema de Afiliados hardMOB",
+    "description": "Sistema completo de gerenciamento de links de afiliados com rastreamento e análises",
+    "version_id": 1001200,
+    "version_string": "1.0.12",
     "dev": "Mojiba",
-    "dev_url": "",
-    "faq_url": "",
-    "support_url": "",
+    "dev_url": "https://github.com/mojiba",
+    "faq_url": "https://github.com/mojiba/scripts/wiki",
+    "support_url": "https://github.com/mojiba/scripts/issues",
     "extra_urls": [],
     "require": {
-        "XF": [2, "XenForo 2.2.0+"]
+        "XF": [2022017, "XenForo 2.2.17+"],
+        "php": ["8.0.0", "PHP 8.0.0+"]
     },
-    "icon": "fa-link"
+    "icon": "fa-external-link-alt"
 }
