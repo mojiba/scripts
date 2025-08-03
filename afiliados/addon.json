@@ -1,17 +1,19 @@
 {
-    "legacy_addon_id": "",
-    "title": "hardMOB Afiliados",
-    "description": "Sistema completo de gestão de links de afiliados com cache, estatísticas e conectores para múltiplos marketplaces",
-    "version_id": 1000500,
-    "version_string": "1.0.5",
-    "dev": "hardMOB",
-    "dev_url": "https://hardmob.com.br",
+    "legacy_addon_id": "Afiliados",
+    "title": "Sistema de Afiliados",
+    "description": "Sistema de afiliados para XenForo",
+    "version_id": 1000600,
+    "version_string": "1.0.6",
+    "dev": "kingMOB",
+    "dev_url": "",
     "faq_url": "",
     "support_url": "",
     "extra_urls": [],
     "require": {
-        "XF": [2021700, "XenForo 2.2.17+"],
-        "php": ["8.1.0", "PHP 8.1.0+"]
+        "XF": [2, "XenForo 2.2.0+"]
     },
-    "icon": ""
+    "icon": "",
+    "route_prefix": {
+        "public": "afiliados"
+    }
 }

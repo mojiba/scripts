@@ -36,8 +36,12 @@ class Listener
         };
     }
 
-    public static function templaterSetup(Templater $templater)
+    // Correção aqui - alterando a assinatura do método
+    public static function templaterSetup(\XF\Container $container, &$params)
     {
+        /** @var Templater $templater */
+        $templater = $container['templater'];
+        
         // Adiciona função personalizada para processar links de afiliados
         $templater->addFunction('affiliate_links', function($templater, &$escape, $text, $userId = null)
         {
@@ -45,6 +49,8 @@ class Listener
             $escape = false;
             return $affiliateGenerator->processText($text, $userId);
         });
+        
+        return $templater;
     }
 
     public static function bbCodeRenderComplete(\XF\BbCode\Renderer\AbstractRenderer $renderer, &$finalOutput, $containerTag, array $children, $option, array $context, array $options)
