@@ -36,7 +36,7 @@ class Listener
         };
     }
 
-    public static function templateerSetup(Templater $templater)
+    public static function templaterSetup(Templater $templater)
     {
         // Adiciona função personalizada para processar links de afiliados
         $templater->addFunction('affiliate_links', function($templater, &$escape, $text, $userId = null)
