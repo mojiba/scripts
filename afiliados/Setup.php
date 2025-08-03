@@ -64,8 +64,9 @@ class Setup extends AbstractSetup
                 'debug_only' => 0
             ]);
             
-            $this->app()->addDefaultPhrase('option_group_hardMOB_afiliados', 'Sistema de Afiliados');
-            $this->app()->addDefaultPhrase('option_group_hardMOB_afiliados_description', 'Configure as opções do sistema de afiliados');
+            // Adiciona frases para o grupo de opções
+            $this->insertMasterPhrase('option_group_hardMOB_afiliados', 'Sistema de Afiliados');
+            $this->insertMasterPhrase('option_group_hardMOB_afiliados_description', 'Configure as opções do sistema de afiliados');
             
             // Adiciona opção para ativar/desativar o sistema
             $this->db()->insert('xf_option', [
@@ -88,8 +89,8 @@ class Setup extends AbstractSetup
                 'display_order' => 10
             ]);
             
-            $this->app()->addDefaultPhrase('option_hardMOB_afiliados_enabled', 'Ativar Sistema de Afiliados');
-            $this->app()->addDefaultPhrase('option_hardMOB_afiliados_enabled_explain', 'Habilita ou desabilita todo o sistema de afiliados');
+            $this->insertMasterPhrase('option_hardMOB_afiliados_enabled', 'Ativar Sistema de Afiliados');
+            $this->insertMasterPhrase('option_hardMOB_afiliados_enabled_explain', 'Habilita ou desabilita todo o sistema de afiliados');
             
             // Adiciona opção para domínios de afiliados
             $defaultDomains = json_encode(['amazon.com.br', 'magazineluiza.com.br', 'kabum.com.br']);
@@ -114,8 +115,8 @@ class Setup extends AbstractSetup
                 'display_order' => 20
             ]);
             
-            $this->app()->addDefaultPhrase('option_hardMOB_afiliados_domains', 'Domínios de Afiliados');
-            $this->app()->addDefaultPhrase('option_hardMOB_afiliados_domains_explain', 'Lista de domínios que serão convertidos em links de afiliados (um por linha)');
+            $this->insertMasterPhrase('option_hardMOB_afiliados_domains', 'Domínios de Afiliados');
+            $this->insertMasterPhrase('option_hardMOB_afiliados_domains_explain', 'Lista de domínios que serão convertidos em links de afiliados (um por linha)');
         }
     }
 
@@ -138,8 +139,34 @@ class Setup extends AbstractSetup
                 'hide_no_children' => 0
             ]);
             
-            $this->app()->addDefaultPhrase('admin_navigation.hardMOB_afiliados', 'Sistema de Afiliados');
+            $this->insertMasterPhrase('admin_navigation.hardMOB_afiliados', 'Sistema de Afiliados');
         }
+    }
+
+    /**
+     * Método auxiliar para inserir frases master
+     */
+    protected function insertMasterPhrase($title, $phraseText, $addOnId = null)
+    {
+        $addOnId = $addOnId ?: $this->addOn->getAddOnId();
+        
+        $phrase = \XF::finder('XF:Phrase')
+            ->where('title', '=', $title)
+            ->where('language_id', '=', 0)
+            ->fetchOne();
+            
+        if (!$phrase)
+        {
+            $phrase = \XF::em()->create('XF:Phrase');
+            $phrase->title = $title;
+            $phrase->language_id = 0;
+            $phrase->addon_id = $addOnId;
+        }
+        
+        $phrase->phrase_text = $phraseText;
+        $phrase->save();
+        
+        return $phrase;
     }
 
     protected function createStoresTable()
@@ -248,6 +275,9 @@ class Setup extends AbstractSetup
         
         // Remove navegação admin
         $this->db()->delete('xf_admin_navigation', "navigation_id = 'hardMOB_afiliados'");
+        
+        // Remove as frases
+        $this->db()->delete('xf_phrase', "title LIKE 'option_group_hardMOB_afiliados%' OR title LIKE 'option_hardMOB_afiliados%' OR title = 'admin_navigation.hardMOB_afiliados'");
     }
     
     public function preInstall()
