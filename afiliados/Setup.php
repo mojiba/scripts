@@ -34,20 +34,13 @@ class Setup extends AbstractSetup
     {
         // Criação do grupo de opções e opções
         $this->createOptionGroup();
-        $this->createAdminNavigation();
     }
 
-    // Método de atualização para a versão 1.0.8
-    public function upgrade1000800Step1()
+    // Método de atualização para a versão 1.0.9
+    public function upgrade1000900Step1()
     {
         // Cria o grupo de opções caso ainda não exista
         $this->createOptionGroup();
-    }
-
-    public function upgrade1000800Step2()
-    {
-        // Cria a navegação de admin caso ainda não exista
-        $this->createAdminNavigation();
     }
 
     protected function createOptionGroup()
@@ -117,29 +110,6 @@ class Setup extends AbstractSetup
             
             $this->insertMasterPhrase('option_hardMOB_afiliados_domains', 'Domínios de Afiliados');
             $this->insertMasterPhrase('option_hardMOB_afiliados_domains_explain', 'Lista de domínios que serão convertidos em links de afiliados (um por linha)');
-        }
-    }
-
-    protected function createAdminNavigation()
-    {
-        $adminNavigation = \XF::finder('XF:AdminNavigation')
-            ->where('navigation_id', '=', 'hardMOB_afiliados')
-            ->fetchOne();
-            
-        if (!$adminNavigation)
-        {
-            $this->db()->insert('xf_admin_navigation', [
-                'navigation_id' => 'hardMOB_afiliados',
-                'parent_navigation_id' => 'setup',
-                'display_order' => 1000,
-                'link' => 'options/groups/hardMOB_afiliados',
-                'icon' => 'fa-link',
-                'admin_permission_id' => 'option',
-                'debug_only' => 0,
-                'hide_no_children' => 0
-            ]);
-            
-            $this->insertMasterPhrase('admin_navigation.hardMOB_afiliados', 'Sistema de Afiliados');
         }
     }
 
@@ -272,9 +242,6 @@ class Setup extends AbstractSetup
         $this->db()->delete('xf_option', "option_id LIKE 'hardMOB_afiliados_%'");
         $this->db()->delete('xf_option_group_relation', "group_id = 'hardMOB_afiliados'");
         $this->db()->delete('xf_option_group', "group_id = 'hardMOB_afiliados'");
-        
-        // Remove navegação admin
-        $this->db()->delete('xf_admin_navigation', "navigation_id = 'hardMOB_afiliados'");
         
         // Remove as frases
         $this->db()->delete('xf_phrase', "title LIKE 'option_group_hardMOB_afiliados%' OR title LIKE 'option_hardMOB_afiliados%' OR title = 'admin_navigation.hardMOB_afiliados'");

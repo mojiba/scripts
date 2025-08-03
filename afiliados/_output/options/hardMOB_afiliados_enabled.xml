@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <options>
-  <option option_id="hardMOB_afiliados_enabled" edit_format="onoff" data_type="boolean" advanced="0">
+  <option option_id="hardMOB_afiliados_enabled" edit_format="onoff" data_type="boolean">
     <default_value>1</default_value>
     <relation group_id="hardMOB_afiliados" display_order="10"/>
     <title>Ativar Sistema de Afiliados</title>

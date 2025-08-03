@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <options>
-  <option option_id="hardMOB_afiliados_domains" edit_format="textbox" data_type="array">
+  <option option_id="hardMOB_afiliados_domains" edit_format="textarea" data_type="array">
     <default_value>["amazon.com.br", "magazineluiza.com.br", "kabum.com.br"]</default_value>
     <edit_format_params>rows=6</edit_format_params>
     <relation group_id="hardMOB_afiliados" display_order="20"/>

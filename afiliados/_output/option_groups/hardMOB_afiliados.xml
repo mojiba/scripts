@@ -3,6 +3,5 @@
   <group group_id="hardMOB_afiliados" display_order="1000" debug_only="0">
     <title>Sistema de Afiliados</title>
     <description>Configure as opções do sistema de afiliados</description>
-    <icon>fa-link</icon>
   </group>
 </option_groups>
