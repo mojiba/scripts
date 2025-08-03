@@ -2,6 +2,7 @@
 
 namespace hardMOB\Afiliados;
 
+use XF\Container;
 use XF\Template\Templater;
 
 class Listener
@@ -36,7 +37,6 @@ class Listener
         };
     }
 
-    // Correção aqui - alterando a assinatura do método
     public static function templaterSetup(\XF\Container $container, &$params)
     {
         /** @var Templater $templater */
