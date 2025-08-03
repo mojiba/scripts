@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<routes>
-    <route route_type="public" route_prefix="affiliate" sub_name="">
-        <route_match>/affiliate/{store_id:int}/{slug}</route_match>
-        <build_match>/affiliate/{store_id}/{slug}</build_match>
-        <controller>hardMOB\Afiliados:Affiliate</controller>
-    </route>
-</routes>
