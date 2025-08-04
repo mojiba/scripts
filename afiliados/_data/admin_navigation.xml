@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <admin_navigation>
-    <navigation navigation_id="hardmob_afiliados" parent_navigation_id="" display_order="1000" debug_only="0" development_only="0" hide_no_children="0">
+    <navigation navigation_id="hardmob_afiliados" display_order="1000" debug_only="0" development_only="0" hide_no_children="0">
         <phrase title="hardmob_afiliados_nav" version_id="1000000" version_string="1.0.0"><![CDATA[hardMOB Afiliados]]></phrase>
         <link>affiliates</link>
         <icon>fa-link</icon>
