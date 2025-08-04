@@ -8,7 +8,8 @@
     </option>
     <option option_id="hardmob_afiliados_cache_driver" edit_format="select" data_type="string" advanced="0">
         <default_value>file</default_value>
-        <edit_format_params>file=Arquivo&amp;#10;redis=Redis</edit_format_params>
+        <edit_format_params>file=Arquivo
+redis=Redis</edit_format_params>
         <relation group_id="hardmob_afiliados" display_order="20"/>
         <phrase title="option.hardmob_afiliados_cache_driver" version_id="1000000" version_string="1.0.0"><![CDATA[Driver de Cache]]></phrase>
         <phrase title="option_explain.hardmob_afiliados_cache_driver" version_id="1000000" version_string="1.0.0"><![CDATA[Sistema de cache para armazenar links gerados.]]></phrase>
