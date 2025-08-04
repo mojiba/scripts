@@ -30,6 +30,39 @@ class Setup extends AbstractSetup
         $this->createCacheTable();
     }
 
+    public function installStep4()
+    {
+        $this->createAuditLogTable();
+    }
+
+    protected function createAuditLogTable()
+    {
+        $sm = $this->schemaManager();
+        
+        if (!$sm->tableExists('xf_hardmob_affiliate_audit_logs'))
+        {
+            $sm->createTable('xf_hardmob_affiliate_audit_logs', function(Create $table)
+            {
+                $table->addColumn('log_id', 'int')->autoIncrement();
+                $table->addColumn('event_type', 'varchar', 50);
+                $table->addColumn('entity_type', 'varchar', 100);
+                $table->addColumn('entity_id', 'int')->setDefault(0);
+                $table->addColumn('user_id', 'int')->setDefault(0);
+                $table->addColumn('ip_address', 'varbinary', 16);
+                $table->addColumn('user_agent', 'varchar', 500);
+                $table->addColumn('old_data', 'mediumtext');
+                $table->addColumn('new_data', 'mediumtext');
+                $table->addColumn('description', 'varchar', 500);
+                $table->addColumn('created_date', 'int');
+                $table->addPrimaryKey('log_id');
+                $table->addKey(['event_type'], 'event_type');
+                $table->addKey(['user_id'], 'user_id');
+                $table->addKey(['created_date'], 'created_date');
+                $table->addKey(['entity_type', 'entity_id'], 'entity');
+            });
+        }
+    }
+
     protected function createStoresTable()
     {
         $sm = $this->schemaManager();
@@ -126,6 +159,15 @@ class Setup extends AbstractSetup
             $sm->dropTable('xf_hardmob_affiliate_cache');
         }
     }
+
+    public function uninstallStep4()
+    {
+        $sm = $this->schemaManager();
+        if ($sm->tableExists('xf_hardmob_affiliate_audit_logs'))
+        {
+            $sm->dropTable('xf_hardmob_affiliate_audit_logs');
+        }
+    }
     
     public function preInstall()
     {
@@ -134,7 +176,8 @@ class Setup extends AbstractSetup
         $conflictTables = [
             'xf_hardmob_affiliate_stores__conflict',
             'xf_hardmob_affiliate_clicks__conflict', 
-            'xf_hardmob_affiliate_cache__conflict'
+            'xf_hardmob_affiliate_cache__conflict',
+            'xf_hardmob_affiliate_audit_logs__conflict'
         ];
         
         foreach ($conflictTables as $table)
@@ -143,6 +186,40 @@ class Setup extends AbstractSetup
             {
                 $sm->dropTable($table);
             }
+        }
+    }
+
+    public function upgrade1001201Step1()
+    {
+        // Upgrade to add audit logging
+        $this->createAuditLogTable();
+    }
+
+    public function upgrade1001201Step2()
+    {
+        // Add indexes for better performance
+        $sm = $this->schemaManager();
+        
+        if ($sm->tableExists('xf_hardmob_affiliate_stores'))
+        {
+            $sm->alterTable('xf_hardmob_affiliate_stores', function(Alter $table)
+            {
+                if (!$table->indexExists('domain'))
+                {
+                    $table->addKey(['domain'], 'domain');
+                }
+            });
+        }
+        
+        if ($sm->tableExists('xf_hardmob_affiliate_clicks'))
+        {
+            $sm->alterTable('xf_hardmob_affiliate_clicks', function(Alter $table)
+            {
+                if (!$table->indexExists('click_date_store'))
+                {
+                    $table->addKey(['click_date', 'store_id'], 'click_date_store');
+                }
+            });
         }
     }
 }
