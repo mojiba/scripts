@@ -16,7 +16,7 @@ class Cache extends AbstractService
     {
         parent::__construct($app);
         $this->linkCache = new \hardMOB\Afiliados\Cache\LinkCache($app);
-        $this->driver = $this->app->service('hardMOB\Afiliados:Configuration')->get('cache_driver', 'file');
+        $this->driver = $this->app->options()->hardmob_afiliados_cache_driver ?: 'file';
     }
 
     /**
