@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<option_groups>
-    <group group_id="hardMOB_afiliados" display_order="1000" debug_only="0">
+<options>
+    <option_group group_id="hardMOB_afiliados" display_order="1000" debug_only="0">
         <phrase title="option_group.hardMOB_afiliados" version_id="1000000" version_string="1.0.0"><![CDATA[hardMOB Afiliados]]></phrase>
         <phrase title="option_group_description.hardMOB_afiliados" version_id="1000000" version_string="1.0.0"><![CDATA[Configurações do sistema de afiliados.]]></phrase>
-    </group>
-</option_groups>
-
-<options>
+    </option_group>
     <option option_id="hardmob_afiliados_enable_cron" edit_format="onoff" data_type="boolean" advanced="0">
         <default_value>1</default_value>
         <relation group_id="hardMOB_afiliados" display_order="10"/>
