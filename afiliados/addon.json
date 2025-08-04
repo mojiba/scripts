@@ -10,7 +10,7 @@
     "support_url": "https://github.com/mojiba/scripts/issues",
     "extra_urls": [],
     "require": {
-        "XF": [2022017, "XenForo 2.2.17+"],
+        "XF": [2020200, "XenForo 2.2.0+"],
         "php": ["8.0.0", "PHP 8.0.0+"]
     },
     "icon": "fa-external-link-alt"
