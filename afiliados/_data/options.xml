@@ -17,7 +17,7 @@
         <phrase title="option.hardmob_afiliados_allowed_domains" version_id="1000000" version_string="1.0.0"><![CDATA[Domínios de Afiliados]]></phrase>
         <phrase title="option_explain.hardmob_afiliados_allowed_domains" version_id="1000000" version_string="1.0.0"><![CDATA[Lista de domínios que serão convertidos em links de afiliados (um por linha)]]></phrase>
     </option>
-    <option option_id="hardmob_afiliados_cache_ttl" edit_format="spinbox" data_type="positive_integer" advanced="0">
+    <option option_id="hardmob_afiliados_cache_ttl" edit_format="spinbox" data_type="unsigned_integer" advanced="0">
         <default_value>3600</default_value>
         <edit_format_params>min=0</edit_format_params>
         <relation group_id="hardMOB_afiliados" display_order="40"/>
