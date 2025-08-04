@@ -10,12 +10,14 @@
         <phrase title="option.hardmob_afiliados_enable_cron" version_id="1000000" version_string="1.0.0"><![CDATA[Habilitar Cron Jobs]]></phrase>
         <phrase title="option_explain.hardmob_afiliados_enable_cron" version_id="1000000" version_string="1.0.0"><![CDATA[Permite que o sistema execute jobs agendados para geração de links e limpeza.]]></phrase>
     </option>
-    <option option_id="hardmob_afiliados_domains" edit_format="textarea" data_type="array" advanced="0">
-        <default_value>["amazon.com.br", "magazineluiza.com.br", "kabum.com.br"]</default_value>
+    <option option_id="hardmob_afiliados_allowed_domains" edit_format="textarea" data_type="string" advanced="0">
+        <default_value>amazon.com.br
+magazineluiza.com.br
+kabum.com.br</default_value>
         <edit_format_params>rows=6</edit_format_params>
         <relation group_id="hardMOB_afiliados" display_order="20"/>
-        <phrase title="option.hardmob_afiliados_domains" version_id="1000000" version_string="1.0.0"><![CDATA[Domínios de Afiliados]]></phrase>
-        <phrase title="option_explain.hardmob_afiliados_domains" version_id="1000000" version_string="1.0.0"><![CDATA[Lista de domínios que serão convertidos em links de afiliados (um por linha)]]></phrase>
+        <phrase title="option.hardmob_afiliados_allowed_domains" version_id="1000000" version_string="1.0.0"><![CDATA[Domínios de Afiliados]]></phrase>
+        <phrase title="option_explain.hardmob_afiliados_allowed_domains" version_id="1000000" version_string="1.0.0"><![CDATA[Lista de domínios que serão convertidos em links de afiliados (um por linha)]]></phrase>
     </option>
     <option option_id="hardmob_afiliados_cache_driver" edit_format="select" data_type="string" advanced="0">
         <default_value>file</default_value>
