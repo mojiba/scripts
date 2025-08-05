@@ -18,51 +18,41 @@ class Listener
             return new $class($app);
         };
         
+        $container['hardMOB\Afiliados:Configuration'] = function($c) use ($app)
+        {
+            $class = $app->extendClass('hardMOB\Afiliados\Service\Configuration');
+            return new $class($app);
+        };
+        
         $container['hardMOB\Afiliados:AffiliateGenerator'] = function($c) use ($app)
         {
             $class = $app->extendClass('hardMOB\Afiliados\Service\AffiliateGenerator');
-            return new $class($app, $app);
+            return new $class($app);
         };
         
         $container['hardMOB\Afiliados:Analytics'] = function($c) use ($app)
         {
             $class = $app->extendClass('hardMOB\Afiliados\Service\Analytics');
-            return new $class($app, $app);
+            return new $class($app);
         };
         
         $container['hardMOB\Afiliados:Stats'] = function($c) use ($app)
         {
             $class = $app->extendClass('hardMOB\Afiliados\Service\Stats');
-            return new $class($app, $app);
+            return new $class($app);
         };
     }
 
     public static function templaterSetup(\XF\Container $container, &$params)
     {
-        /** @var Templater $templater */
-        $templater = $container['templater'];
-        
-        // Adiciona função personalizada para processar links de afiliados
-        $templater->addFunction('affiliate_links', function($templater, &$escape, $text, $userId = null)
-        {
-            $affiliateGenerator = \XF::app()->service('hardMOB\Afiliados:AffiliateGenerator');
-            $escape = false;
-            return $affiliateGenerator->processText($text, $userId);
-        });
-        
-        return $templater;
+        // Simplified - disable complex template processing to avoid startup crashes
+        return;
     }
 
     public static function bbCodeRenderComplete(\XF\BbCode\Renderer\AbstractRenderer $renderer, &$finalOutput, $containerTag, array $children, $option, array $context, array $options)
     {
-        if (!($renderer instanceof \XF\BbCode\Renderer\Html)) {
-            return;
-        }
-
-        // Processa links de afiliados no conteúdo renderizado
-        $userId = isset($context['user']) ? $context['user']->user_id : null;
-        $affiliateGenerator = \XF::app()->service('hardMOB\Afiliados:AffiliateGenerator');
-        $finalOutput = $affiliateGenerator->processText($finalOutput, $userId);
+        // Simplified - disable complex BBCode processing to avoid startup crashes
+        return;
     }
 
     public static function criteriaUser($rule, array $data, \XF\Entity\User $user, &$returnValue)

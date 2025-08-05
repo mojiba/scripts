@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <code_event_listeners>
     <listener event_id="app_setup" execute_order="10" callback_class="hardMOB\Afiliados\Listener" callback_method="appSetup" active="1" hint="" description="Setup de serviços do addon" />
-    <listener event_id="templater_setup" execute_order="10" callback_class="hardMOB\Afiliados\Listener" callback_method="templaterSetup" active="1" hint="" description="Setup de funções de template" />
-    <listener event_id="bb_code_render_complete" execute_order="10" callback_class="hardMOB\Afiliados\Listener" callback_method="bbCodeRenderComplete" active="1" hint="" description="Processamento de links de afiliados em BBCode" />
+    <listener event_id="templater_setup" execute_order="10" callback_class="hardMOB\Afiliados\Listener" callback_method="templaterSetup" active="0" hint="" description="Setup de funções de template" />
+    <listener event_id="bb_code_render_complete" execute_order="10" callback_class="hardMOB\Afiliados\Listener" callback_method="bbCodeRenderComplete" active="0" hint="" description="Processamento de links de afiliados em BBCode" />
     <listener event_id="criteria_user" execute_order="10" callback_class="hardMOB\Afiliados\Listener" callback_method="criteriaUser" active="1" hint="hardmob_affiliate_clicks" description="Critério de usuário baseado em cliques" />
 </code_event_listeners>
