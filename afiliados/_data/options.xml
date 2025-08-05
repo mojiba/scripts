@@ -1,19 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <options>
     <option_group group_id="hardMOB_afiliados" display_order="1000" debug_only="0">
-        <phrase title="option_group.hardMOB_afiliados" version_id="1003400" version_string="1.0.34"><![CDATA[hardMOB Afiliados]]></phrase>
-        <phrase title="option_group_description.hardMOB_afiliados" version_id="1003400" version_string="1.0.34"><![CDATA[Configurações do sistema de afiliados.]]></phrase>
+        <phrase title="option_group.hardMOB_afiliados" version_id="1003500" version_string="1.0.35"><![CDATA[hardMOB Afiliados]]></phrase>
+        <phrase title="option_group_description.hardMOB_afiliados" version_id="1003500" version_string="1.0.35"><![CDATA[Configurações do sistema de afiliados.]]></phrase>
     </option_group>
     <option option_id="hardmob_afiliados_enable_cron" edit_format="onoff" data_type="boolean" advanced="0">
         <default_value>1</default_value>
         <relation group_id="hardMOB_afiliados" display_order="10"/>
-        <phrase title="option.hardmob_afiliados_enable_cron" version_id="1003400" version_string="1.0.34"><![CDATA[Habilitar Cron Jobs]]></phrase>
-        <phrase title="option_explain.hardmob_afiliados_enable_cron" version_id="1003400" version_string="1.0.34"><![CDATA[Permite que o sistema execute jobs agendados para geração de links e limpeza.]]></phrase>
+        <phrase title="option.hardmob_afiliados_enable_cron" version_id="1003500" version_string="1.0.35"><![CDATA[Habilitar Cron Jobs]]></phrase>
+        <phrase title="option_explain.hardmob_afiliados_enable_cron" version_id="1003500" version_string="1.0.35"><![CDATA[Permite que o sistema execute jobs agendados para geração de links e limpeza.]]></phrase>
+    </option>
+    <option option_id="hardmob_afiliados_allowed_domains" edit_format="textarea" data_type="string" advanced="0">
+        <default_value></default_value>
+        <edit_format_params>rows=6</edit_format_params>
+        <relation group_id="hardMOB_afiliados" display_order="20"/>
+        <phrase title="option.hardmob_afiliados_allowed_domains" version_id="1003500" version_string="1.0.35"><![CDATA[Domínios de Afiliados]]></phrase>
+        <phrase title="option_explain.hardmob_afiliados_allowed_domains" version_id="1003500" version_string="1.0.35"><![CDATA[Lista de domínios que serão convertidos em links de afiliados (um por linha)]]></phrase>
     </option>
     <option option_id="hardmob_afiliados_enable_analytics" edit_format="onoff" data_type="boolean" advanced="0">
         <default_value>1</default_value>
-        <relation group_id="hardMOB_afiliados" display_order="20"/>
-        <phrase title="option.hardmob_afiliados_enable_analytics" version_id="1003400" version_string="1.0.34"><![CDATA[Habilitar Analytics]]></phrase>
-        <phrase title="option_explain.hardmob_afiliados_enable_analytics" version_id="1003400" version_string="1.0.34"><![CDATA[Ativa o sistema de análise e rastreamento de cliques nos links de afiliados.]]></phrase>
+        <relation group_id="hardMOB_afiliados" display_order="30"/>
+        <phrase title="option.hardmob_afiliados_enable_analytics" version_id="1003500" version_string="1.0.35"><![CDATA[Habilitar Analytics]]></phrase>
+        <phrase title="option_explain.hardmob_afiliados_enable_analytics" version_id="1003500" version_string="1.0.35"><![CDATA[Ativa o sistema de análise e rastreamento de cliques nos links de afiliados.]]></phrase>
     </option>
 </options>
