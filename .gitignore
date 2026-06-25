@@ -1,0 +1,23 @@
+# Test-related files and directories
+/vendor/
+composer.lock
+.phpunit.result.cache
+.phpunit.cache/
+coverage/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+
+# Cache files
+cache/
+*.cache

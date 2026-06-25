@@ -19,6 +19,11 @@ class LinkParser
             'type' => 'unknown'
         ];
 
+        // Handle invalid input types
+        if (!is_string($url) || empty($url)) {
+            return $info;
+        }
+
         // Parse da URL
         $parsed = parse_url($url);
         if (!$parsed || !isset($parsed['host'])) {
