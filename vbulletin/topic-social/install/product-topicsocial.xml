@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<product productid="topicsocial" active="1">
+  <title>Topic Social</title>
+  <description>Publishes selected vBulletin topics to X and Telegram.</description>
+  <version>0.1.0</version>
+  <url />
+  <versioncheckurl />
+
+  <pluginhooks>
+    <hook name="newthread_complete">
+      <title>Topic Social - automatic send</title>
+      <phpcode><![CDATA[
+require_once(DIR . '/vbulletin/topic-social/src/hooks.php');
+if (isset($threadid)) {
+    topicsocial_hook_newthread_complete($threadid);
+}
+      ]]></phpcode>
+    </hook>
+
+    <hook name="showthread_start">
+      <title>Topic Social - manual action router</title>
+      <phpcode><![CDATA[
+require_once(DIR . '/vbulletin/topic-social/src/hooks.php');
+if (isset($vbulletin->GPC['do']) && $vbulletin->GPC['do'] === 'topicsocial_send') {
+    topicsocial_handle_manual_send_request();
+}
+      ]]></phpcode>
+    </hook>
+
+    <hook name="showthread_complete">
+      <title>Topic Social - admin status box</title>
+      <phpcode><![CDATA[
+require_once(DIR . '/vbulletin/topic-social/src/hooks.php');
+if (isset($thread) && is_array($thread) && !empty($thread['threadid']) && isset($templater)) {
+    $templater = topicsocial_append_admin_box_to_output($thread['threadid'], $templater);
+}
+      ]]></phpcode>
+    </hook>
+  </pluginhooks>
+</product>
