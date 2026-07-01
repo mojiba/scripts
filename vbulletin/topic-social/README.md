@@ -11,12 +11,16 @@ Plugin project for vBulletin 4.2.5 that publishes selected topics to X and Teleg
 - Support optional URL shortening via Cutt.ly
 - Keep compatibility with PHP 7.0.33 and MariaDB 10.5
 
-## Planned structure
+## Project layout
 
-- `docs/` - specifications and implementation notes
-- `src/` - PHP source code for the plugin
-- `install/` - installation assets such as SQL and Product XML notes
+- `docs/specification.md` - functional specification
+- `src/plugin_core.php` - core helper functions and option access
+- `src/template_engine.php` - message template rendering helpers
+- `src/extractors.php` - price, image, and URL extraction helpers
+- `src/publishers.php` - Telegram, X, and Cutt.ly publishing helpers
+- `install/schema.sql` - database tables used by the plugin
+- `install/options.md` - option varnames and intended meanings
 
 ## Current status
 
-Initial project scaffold.
+Scaffold and technical design in progress on branch `feature/vbulletin-topic-social`.
