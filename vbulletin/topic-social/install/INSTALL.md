@@ -2,31 +2,28 @@
 
 ## Current status
 
-The project currently includes:
-- PHP scaffold files
-- SQL schema draft
-- product XML draft
-- option planning documents
-- multi-channel publishing flow
-- Telegram and WhatsApp channel scaffolding
+The project now includes a rebuilt `product-topicsocial.xml` in the structural style exported by your vBulletin 4.2.5 installation.
 
-## Manual installation outline
+## Import path
 
-1. Place the project files where vBulletin can load them.
-2. Create the database tables from `install/schema.sql`.
-3. Review and adapt `install/product-topicsocial.xml` against a real exported product from your vBulletin 4.2.5 installation.
-4. Register product hooks from the validated XML.
-5. Create the AdminCP options listed in `install/options.md`.
-6. Configure Telegram, WhatsApp, X, Cutt.ly, monitored forum IDs, and message template.
+1. Place the PHP source files where vBulletin can load them.
+2. In AdminCP, import `vbulletin/topic-social/install/product-topicsocial.xml`.
+3. Confirm the install code creates the Topic Social tables.
+4. Review the new `Topic Social` option group in AdminCP.
+5. Configure monitored forums, template, Telegram, WhatsApp, X, and logging.
+6. Test manual sending on a thread.
+7. Test automatic sending with a new thread in a monitored forum.
 
-## Validation guidance for real import
+## Important validation checklist
 
-Before attempting a real import:
-- export any small working product from the target vBulletin 4.2.5 instance;
-- compare its XML structure with `product-topicsocial.xml`;
-- align node names, attributes, plugin structures, and option structures;
-- verify the actual hook names and available variables for `newthread_complete`, `showthread_start`, and `showthread_complete`.
+After import, verify:
+- the product imports without XML schema errors;
+- the option group and settings appear correctly;
+- the auto hook fires on new thread creation;
+- the manual route returns correctly to `showthread.php`;
+- the admin box appears in the expected location;
+- no theme/plugin conflict occurs on `showthread_complete`.
 
-## Important
+## Fallback plan
 
-The product XML in this repository is a stronger draft, but still should be treated as a planning file until validated against the exact product XML schema and hook behavior of your target vBulletin 4.2.5 installation.
+If the admin box does not appear in the desired position, the first thing to adjust should be the insertion hook and target template hook variable, not the whole product structure.

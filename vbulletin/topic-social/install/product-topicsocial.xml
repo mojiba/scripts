@@ -1,38 +1,253 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
 <product productid="topicsocial" active="1">
-  <title>Topic Social</title>
-  <description>Publishes selected vBulletin topics to Telegram, WhatsApp, and X.</description>
-  <version>0.3.0</version>
-  <url />
-  <versioncheckurl />
-
-  <pluginhooks>
-    <hook name="newthread_complete">
-      <title>Topic Social - automatic send</title>
-      <phpcode><![CDATA[
-require_once(DIR . '/vbulletin/topic-social/src/hooks.php');
-if (isset($threadid)) {
-    topicsocial_hook_newthread_complete($threadid);
+	<title>Topic Social</title>
+	<description>Publishes selected vBulletin topics to Telegram, WhatsApp, and X.</description>
+	<version>0.4.0</version>
+	<url />
+	<versioncheckurl />
+	<dependencies>
+		<dependency dependencytype="mysql" minversion="5.1.0" maxversion="999.0.0" />
+		<dependency dependencytype="vbulletin" minversion="4.0.0" maxversion="5.0.0a1" />
+	</dependencies>
+	<codes>
+		<code version="*">
+			<installcode><![CDATA[
+if (!function_exists('curl_init'))
+{
+	print_dots_stop();
+	print_cp_message('<strong>Installation Failed</strong><br />cURL is required for Topic Social.');
 }
-      ]]></phpcode>
-    </hook>
 
-    <hook name="showthread_start">
-      <title>Topic Social - manual action router</title>
-      <phpcode><![CDATA[
+if (!function_exists('json_decode'))
+{
+	print_dots_stop();
+	print_cp_message('<strong>Installation Failed</strong><br />json_decode is required for Topic Social.');
+}
+
+$vbulletin->db->query_write("CREATE TABLE IF NOT EXISTS `plugin_topicsocial_status` (
+  `threadid` INT UNSIGNED NOT NULL,
+  `last_attempt_at` DATETIME NULL,
+  `last_success_at` DATETIME NULL,
+  `status` VARCHAR(32) NOT NULL DEFAULT 'pending',
+  `last_channels` VARCHAR(255) NULL,
+  `last_message_text` MEDIUMTEXT NULL,
+  `last_url` VARCHAR(1000) NULL,
+  `last_image_url` VARCHAR(1000) NULL,
+  `last_error` MEDIUMTEXT NULL,
+  PRIMARY KEY (`threadid`),
+  KEY `status` (`status`),
+  KEY `last_success_at` (`last_success_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8");
+
+$vbulletin->db->query_write("CREATE TABLE IF NOT EXISTS `plugin_topicsocial_log` (
+  `logid` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `threadid` INT UNSIGNED NOT NULL,
+  `channel` VARCHAR(32) NOT NULL,
+  `attempted_at` DATETIME NOT NULL,
+  `success` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
+  `message_text` MEDIUMTEXT NULL,
+  `target_url` VARCHAR(1000) NULL,
+  `image_url` VARCHAR(1000) NULL,
+  `response_text` MEDIUMTEXT NULL,
+  `error_text` MEDIUMTEXT NULL,
+  PRIMARY KEY (`logid`),
+  KEY `threadid` (`threadid`),
+  KEY `channel` (`channel`),
+  KEY `attempted_at` (`attempted_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8");
+			]]></installcode>
+			<uninstallcode><![CDATA[
+$vbulletin->db->query_write("DROP TABLE IF EXISTS `plugin_topicsocial_log`");
+$vbulletin->db->query_write("DROP TABLE IF EXISTS `plugin_topicsocial_status`");
+			]]></uninstallcode>
+		</code>
+	</codes>
+	<templates>
+	</templates>
+	<stylevardfns>
+	</stylevardfns>
+	<stylevars>
+	</stylevars>
+	<plugins>
+		<plugin active="1" executionorder="5">
+			<title>Topic Social - Automatic publish from thread first post save</title>
+			<hookname>threadfpdata_postsave</hookname>
+			<phpcode><![CDATA[
+require_once(DIR . '/vbulletin/topic-social/src/hooks.php');
+if (isset($threadinfo) && is_array($threadinfo) && !empty($threadinfo['threadid']))
+{
+	topicsocial_hook_newthread_complete($threadinfo['threadid']);
+}
+elseif (isset($threadid))
+{
+	topicsocial_hook_newthread_complete($threadid);
+}
+			]]></phpcode>
+		</plugin>
+		<plugin active="1" executionorder="5">
+			<title>Topic Social - Manual route on showthread</title>
+			<hookname>showthread_start</hookname>
+			<phpcode><![CDATA[
 require_once(DIR . '/vbulletin/topic-social/src/hooks.php');
 topicsocial_hook_showthread_start();
-      ]]></phpcode>
-    </hook>
-
-    <hook name="showthread_complete">
-      <title>Topic Social - admin status box</title>
-      <phpcode><![CDATA[
+			]]></phpcode>
+		</plugin>
+		<plugin active="1" executionorder="32767">
+			<title>Topic Social - Admin box on showthread</title>
+			<hookname>showthread_complete</hookname>
+			<phpcode><![CDATA[
 require_once(DIR . '/vbulletin/topic-social/src/hooks.php');
-if (isset($thread) && is_array($thread) && !empty($thread['threadid']) && isset($templater)) {
-    $templater = topicsocial_append_admin_box_to_output($thread['threadid'], $templater);
+if (isset($thread) && is_array($thread) && !empty($thread['threadid']) && isset($template_hook['postbit_start']))
+{
+	$template_hook['postbit_start'] = topicsocial_append_admin_box_to_output($thread['threadid'], $template_hook['postbit_start']);
 }
-      ]]></phpcode>
-    </hook>
-  </pluginhooks>
+			]]></phpcode>
+		</plugin>
+	</plugins>
+	<phrases>
+		<phrasetype name="vBulletin Settings" fieldname="vbsettings">
+			<phrase name="settinggroup_topicsocial" date="20260701" username="admin" version="0.4.0"><![CDATA[Topic Social]]></phrase>
+			<phrase name="setting_topicsocial_enabled_title" date="20260701" username="admin" version="0.4.0"><![CDATA[Ativar Topic Social]]></phrase>
+			<phrase name="setting_topicsocial_enabled_desc" date="20260701" username="admin" version="0.4.0"><![CDATA[Ativa ou desativa o plugin Topic Social.]]></phrase>
+			<phrase name="setting_topicsocial_mode_title" date="20260701" username="admin" version="0.4.0"><![CDATA[Modo de Publica&ccedil;&atilde;o]]></phrase>
+			<phrase name="setting_topicsocial_mode_desc" date="20260701" username="admin" version="0.4.0"><![CDATA[Escolha entre publica&ccedil;&atilde;o autom&aacute;tica ou manual.]]></phrase>
+			<phrase name="setting_topicsocial_allow_resend_title" date="20260701" username="admin" version="0.4.0"><![CDATA[Permitir Reenvio Manual]]></phrase>
+			<phrase name="setting_topicsocial_allow_resend_desc" date="20260701" username="admin" version="0.4.0"><![CDATA[Permite que administradores reenviem manualmente um t&oacute;pico j&aacute; processado.]]></phrase>
+			<phrase name="setting_topicsocial_forumids_title" date="20260701" username="admin" version="0.4.0"><![CDATA[F&oacute;runs Monitorados]]></phrase>
+			<phrase name="setting_topicsocial_forumids_desc" date="20260701" username="admin" version="0.4.0"><![CDATA[IDs dos f&oacute;runs monitorados, separados por v&iacute;rgula.]]></phrase>
+			<phrase name="setting_topicsocial_message_template_title" date="20260701" username="admin" version="0.4.0"><![CDATA[Template da Mensagem]]></phrase>
+			<phrase name="setting_topicsocial_message_template_desc" date="20260701" username="admin" version="0.4.0"><![CDATA[Template usado para montar a mensagem de sa&iacute;da. Use {title}, {price}, {url} e {hashtags}.]]></phrase>
+			<phrase name="setting_topicsocial_cuttly_enabled_title" date="20260701" username="admin" version="0.4.0"><![CDATA[Ativar Cutt.ly]]></phrase>
+			<phrase name="setting_topicsocial_cuttly_enabled_desc" date="20260701" username="admin" version="0.4.0"><![CDATA[Ativa o encurtamento de URLs com Cutt.ly.]]></phrase>
+			<phrase name="setting_topicsocial_cuttly_api_key_title" date="20260701" username="admin" version="0.4.0"><![CDATA[Chave da API Cutt.ly]]></phrase>
+			<phrase name="setting_topicsocial_cuttly_api_key_desc" date="20260701" username="admin" version="0.4.0"><![CDATA[Chave de API do Cutt.ly.]]></phrase>
+			<phrase name="setting_topicsocial_telegram_enabled_title" date="20260701" username="admin" version="0.4.0"><![CDATA[Ativar Telegram]]></phrase>
+			<phrase name="setting_topicsocial_telegram_enabled_desc" date="20260701" username="admin" version="0.4.0"><![CDATA[Ativa o envio para Telegram.]]></phrase>
+			<phrase name="setting_topicsocial_telegram_bot_token_title" date="20260701" username="admin" version="0.4.0"><![CDATA[Telegram Bot Token]]></phrase>
+			<phrase name="setting_topicsocial_telegram_bot_token_desc" date="20260701" username="admin" version="0.4.0"><![CDATA[Token do bot do Telegram.]]></phrase>
+			<phrase name="setting_topicsocial_telegram_chat_id_title" date="20260701" username="admin" version="0.4.0"><![CDATA[Telegram Chat ID]]></phrase>
+			<phrase name="setting_topicsocial_telegram_chat_id_desc" date="20260701" username="admin" version="0.4.0"><![CDATA[ID do chat ou canal do Telegram.]]></phrase>
+			<phrase name="setting_topicsocial_whatsapp_enabled_title" date="20260701" username="admin" version="0.4.0"><![CDATA[Ativar WhatsApp]]></phrase>
+			<phrase name="setting_topicsocial_whatsapp_enabled_desc" date="20260701" username="admin" version="0.4.0"><![CDATA[Ativa o envio para WhatsApp via API externa.]]></phrase>
+			<phrase name="setting_topicsocial_whatsapp_api_url_title" date="20260701" username="admin" version="0.4.0"><![CDATA[WhatsApp API URL]]></phrase>
+			<phrase name="setting_topicsocial_whatsapp_api_url_desc" date="20260701" username="admin" version="0.4.0"><![CDATA[Endpoint HTTP da API usada para enviar mensagens pelo WhatsApp.]]></phrase>
+			<phrase name="setting_topicsocial_whatsapp_token_title" date="20260701" username="admin" version="0.4.0"><![CDATA[WhatsApp Token]]></phrase>
+			<phrase name="setting_topicsocial_whatsapp_token_desc" date="20260701" username="admin" version="0.4.0"><![CDATA[Token de autentica&ccedil;&atilde;o para a API do WhatsApp.]]></phrase>
+			<phrase name="setting_topicsocial_whatsapp_to_title" date="20260701" username="admin" version="0.4.0"><![CDATA[Destino WhatsApp]]></phrase>
+			<phrase name="setting_topicsocial_whatsapp_to_desc" date="20260701" username="admin" version="0.4.0"><![CDATA[N&uacute;mero ou identificador do destino do WhatsApp.]]></phrase>
+			<phrase name="setting_topicsocial_x_enabled_title" date="20260701" username="admin" version="0.4.0"><![CDATA[Ativar X]]></phrase>
+			<phrase name="setting_topicsocial_x_enabled_desc" date="20260701" username="admin" version="0.4.0"><![CDATA[Ativa o envio para X.]]></phrase>
+			<phrase name="setting_topicsocial_x_api_key_title" date="20260701" username="admin" version="0.4.0"><![CDATA[X API Key]]></phrase>
+			<phrase name="setting_topicsocial_x_api_key_desc" date="20260701" username="admin" version="0.4.0"><![CDATA[Chave de API do X.]]></phrase>
+			<phrase name="setting_topicsocial_x_api_secret_title" date="20260701" username="admin" version="0.4.0"><![CDATA[X API Secret]]></phrase>
+			<phrase name="setting_topicsocial_x_api_secret_desc" date="20260701" username="admin" version="0.4.0"><![CDATA[Segredo da API do X.]]></phrase>
+			<phrase name="setting_topicsocial_x_access_token_title" date="20260701" username="admin" version="0.4.0"><![CDATA[X Access Token]]></phrase>
+			<phrase name="setting_topicsocial_x_access_token_desc" date="20260701" username="admin" version="0.4.0"><![CDATA[Access token do X.]]></phrase>
+			<phrase name="setting_topicsocial_x_access_token_secret_title" date="20260701" username="admin" version="0.4.0"><![CDATA[X Access Token Secret]]></phrase>
+			<phrase name="setting_topicsocial_x_access_token_secret_desc" date="20260701" username="admin" version="0.4.0"><![CDATA[Segredo do access token do X.]]></phrase>
+			<phrase name="setting_topicsocial_log_enabled_title" date="20260701" username="admin" version="0.4.0"><![CDATA[Ativar Logs]]></phrase>
+			<phrase name="setting_topicsocial_log_enabled_desc" date="20260701" username="admin" version="0.4.0"><![CDATA[Grava logs de tentativas por canal.]]></phrase>
+		</phrasetype>
+	</phrases>
+	<options>
+		<settinggroup name="topicsocial" displayorder="25">
+			<setting varname="topicsocial_enabled" displayorder="10">
+				<datatype>boolean</datatype>
+				<optioncode>yesno</optioncode>
+				<defaultvalue>1</defaultvalue>
+			</setting>
+			<setting varname="topicsocial_mode" displayorder="20">
+				<datatype>free</datatype>
+				<optioncode>select:piped
+auto|Autom&aacute;tico
+manual|Manual</optioncode>
+				<defaultvalue>manual</defaultvalue>
+			</setting>
+			<setting varname="topicsocial_allow_resend" displayorder="30">
+				<datatype>boolean</datatype>
+				<optioncode>yesno</optioncode>
+				<defaultvalue>1</defaultvalue>
+			</setting>
+			<setting varname="topicsocial_forumids" displayorder="40">
+				<datatype>free</datatype>
+				<optioncode>textarea</optioncode>
+				<defaultvalue></defaultvalue>
+			</setting>
+			<setting varname="topicsocial_message_template" displayorder="50">
+				<datatype>free</datatype>
+				<optioncode>textarea</optioncode>
+				<defaultvalue><![CDATA[{title}
+
+{price}
+
+{url}
+
+{hashtags}]]></defaultvalue>
+			</setting>
+			<setting varname="topicsocial_cuttly_enabled" displayorder="60">
+				<datatype>boolean</datatype>
+				<optioncode>yesno</optioncode>
+				<defaultvalue>0</defaultvalue>
+			</setting>
+			<setting varname="topicsocial_cuttly_api_key" displayorder="70">
+				<datatype>free</datatype>
+			</setting>
+			<setting varname="topicsocial_telegram_enabled" displayorder="80">
+				<datatype>boolean</datatype>
+				<optioncode>yesno</optioncode>
+				<defaultvalue>0</defaultvalue>
+			</setting>
+			<setting varname="topicsocial_telegram_bot_token" displayorder="90">
+				<datatype>free</datatype>
+			</setting>
+			<setting varname="topicsocial_telegram_chat_id" displayorder="100">
+				<datatype>free</datatype>
+			</setting>
+			<setting varname="topicsocial_whatsapp_enabled" displayorder="110">
+				<datatype>boolean</datatype>
+				<optioncode>yesno</optioncode>
+				<defaultvalue>0</defaultvalue>
+			</setting>
+			<setting varname="topicsocial_whatsapp_api_url" displayorder="120">
+				<datatype>free</datatype>
+			</setting>
+			<setting varname="topicsocial_whatsapp_token" displayorder="130">
+				<datatype>free</datatype>
+			</setting>
+			<setting varname="topicsocial_whatsapp_to" displayorder="140">
+				<datatype>free</datatype>
+			</setting>
+			<setting varname="topicsocial_x_enabled" displayorder="150">
+				<datatype>boolean</datatype>
+				<optioncode>yesno</optioncode>
+				<defaultvalue>0</defaultvalue>
+			</setting>
+			<setting varname="topicsocial_x_api_key" displayorder="160">
+				<datatype>free</datatype>
+			</setting>
+			<setting varname="topicsocial_x_api_secret" displayorder="170">
+				<datatype>free</datatype>
+			</setting>
+			<setting varname="topicsocial_x_access_token" displayorder="180">
+				<datatype>free</datatype>
+			</setting>
+			<setting varname="topicsocial_x_access_token_secret" displayorder="190">
+				<datatype>free</datatype>
+			</setting>
+			<setting varname="topicsocial_log_enabled" displayorder="200">
+				<datatype>boolean</datatype>
+				<optioncode>yesno</optioncode>
+				<defaultvalue>1</defaultvalue>
+			</setting>
+		</settinggroup>
+	</options>
+	<helptopics>
+	</helptopics>
+	<cronentries>
+	</cronentries>
+	<faqentries>
+	</faqentries>
+	<navigation>
+	</navigation>
 </product>
