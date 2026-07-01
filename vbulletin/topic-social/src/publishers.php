@@ -42,6 +42,18 @@ function topicsocial_publish_to_telegram(array $payload)
         return array('success' => false, 'error' => 'Telegram credentials not configured.');
     }
 
+    $hasImage = !empty($payload['image_url']);
+    if ($hasImage) {
+        $url = 'https://api.telegram.org/bot' . $token . '/sendPhoto';
+        $body = array(
+            'chat_id' => $chatId,
+            'photo' => $payload['image_url'],
+            'caption' => isset($payload['text']) ? $payload['text'] : '',
+        );
+
+        return topicsocial_http_post_json($url, $body);
+    }
+
     $url = 'https://api.telegram.org/bot' . $token . '/sendMessage';
     $body = array(
         'chat_id' => $chatId,
@@ -57,6 +69,22 @@ function topicsocial_publish_to_x(array $payload)
     return array(
         'success' => false,
         'error' => 'X publishing not implemented yet.',
+    );
+}
+
+function topicsocial_publish_to_channel($channel, array $payload)
+{
+    switch ($channel) {
+        case 'telegram':
+            return topicsocial_publish_to_telegram($payload);
+
+        case 'x':
+            return topicsocial_publish_to_x($payload);
+    }
+
+    return array(
+        'success' => false,
+        'error' => 'Unsupported channel: ' . $channel,
     );
 }
 

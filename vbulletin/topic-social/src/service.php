@@ -55,40 +55,55 @@ function topicsocial_build_payload(array $thread, array $firstpost)
 
 function topicsocial_publish_payload(array $payload)
 {
-    $result = array(
-        'telegram' => array('success' => false, 'skipped' => true),
-        'x' => array('success' => false, 'skipped' => true),
-        'overall_status' => 'pending',
+    $enabledChannels = topicsocial_get_enabled_channels();
+    $channelResults = array();
+
+    if (empty($enabledChannels)) {
+        return array(
+            'channels' => array(),
+            'overall_status' => 'skipped',
+        );
+    }
+
+    foreach ($enabledChannels as $channel => $config) {
+        $channelResult = topicsocial_publish_to_channel($channel, $payload);
+        $channelResult['channel'] = $channel;
+        $channelResult['skipped'] = false;
+        $channelResults[$channel] = $channelResult;
+    }
+
+    return array(
+        'channels' => $channelResults,
+        'overall_status' => topicsocial_calculate_overall_status($channelResults),
     );
+}
 
-    if (topicsocial_get_option('topicsocial_telegram_enabled', 0)) {
-        $telegramResult = topicsocial_publish_to_telegram($payload);
-        $telegramResult['skipped'] = false;
-        $result['telegram'] = $telegramResult;
+function topicsocial_calculate_overall_status(array $channelResults)
+{
+    if (empty($channelResults)) {
+        return 'skipped';
     }
 
-    if (topicsocial_get_option('topicsocial_x_enabled', 0)) {
-        $xResult = topicsocial_publish_to_x($payload);
-        $xResult['skipped'] = false;
-        $result['x'] = $xResult;
+    $successCount = 0;
+    $failureCount = 0;
+
+    foreach ($channelResults as $channel => $channelResult) {
+        if (!empty($channelResult['success'])) {
+            $successCount++;
+        } else {
+            $failureCount++;
+        }
     }
 
-    $telegramSent = (!empty($result['telegram']['success']));
-    $xSent = (!empty($result['x']['success']));
-    $telegramEnabled = topicsocial_get_option('topicsocial_telegram_enabled', 0) ? true : false;
-    $xEnabled = topicsocial_get_option('topicsocial_x_enabled', 0) ? true : false;
-
-    if (($telegramEnabled && $telegramSent) && ($xEnabled && $xSent)) {
-        $result['overall_status'] = 'sent';
-    } elseif (($telegramEnabled && $telegramSent) || ($xEnabled && $xSent)) {
-        $result['overall_status'] = 'partial';
-    } elseif (!$telegramEnabled && !$xEnabled) {
-        $result['overall_status'] = 'skipped';
-    } else {
-        $result['overall_status'] = 'error';
+    if ($successCount > 0 && $failureCount === 0) {
+        return 'sent';
     }
 
-    return $result;
+    if ($successCount > 0) {
+        return 'partial';
+    }
+
+    return 'error';
 }
 
 function topicsocial_save_publish_status($threadid, array $payload, array $result)
@@ -109,21 +124,18 @@ function topicsocial_save_publish_status($threadid, array $payload, array $resul
     $lastUrl = $db->escape_string(isset($payload['url']) ? $payload['url'] : '');
     $lastImageUrl = $db->escape_string(isset($payload['image_url']) ? $payload['image_url'] : '');
     $lastError = $db->escape_string(topicsocial_collect_errors($result));
-
-    $sentToTelegram = !empty($result['telegram']['success']) ? 1 : 0;
-    $sentToX = !empty($result['x']['success']) ? 1 : 0;
+    $lastChannels = $db->escape_string(implode(',', topicsocial_extract_successful_channels($result)));
 
     $sql = "
         INSERT INTO plugin_topicsocial_status
-            (threadid, last_attempt_at, last_success_at, status, sent_to_telegram, sent_to_x, last_message_text, last_url, last_image_url, last_error)
+            (threadid, last_attempt_at, last_success_at, status, last_channels, last_message_text, last_url, last_image_url, last_error)
         VALUES
-            ($threadid, '" . $attemptedAt . "', " . ($successAt ? "'" . $successAt . "'" : "NULL") . ", '" . $status . "', $sentToTelegram, $sentToX, '" . $lastMessageText . "', '" . $lastUrl . "', '" . $lastImageUrl . "', '" . $lastError . "')
+            ($threadid, '" . $attemptedAt . "', " . ($successAt ? "'" . $successAt . "'" : "NULL") . ", '" . $status . "', '" . $lastChannels . "', '" . $lastMessageText . "', '" . $lastUrl . "', '" . $lastImageUrl . "', '" . $lastError . "')
         ON DUPLICATE KEY UPDATE
             last_attempt_at = VALUES(last_attempt_at),
             last_success_at = VALUES(last_success_at),
             status = VALUES(status),
-            sent_to_telegram = VALUES(sent_to_telegram),
-            sent_to_x = VALUES(sent_to_x),
+            last_channels = VALUES(last_channels),
             last_message_text = VALUES(last_message_text),
             last_url = VALUES(last_url),
             last_image_url = VALUES(last_image_url),
@@ -133,8 +145,9 @@ function topicsocial_save_publish_status($threadid, array $payload, array $resul
     $db->query_write($sql);
 
     if (topicsocial_logging_enabled()) {
-        topicsocial_insert_log_row($threadid, 'telegram', $payload, $result['telegram']);
-        topicsocial_insert_log_row($threadid, 'x', $payload, $result['x']);
+        foreach ($result['channels'] as $channel => $channelResult) {
+            topicsocial_insert_log_row($threadid, $channel, $payload, $channelResult);
+        }
     }
 
     return true;
@@ -179,15 +192,34 @@ function topicsocial_collect_errors(array $result)
 {
     $errors = array();
 
-    if (!empty($result['telegram']['error'])) {
-        $errors[] = 'telegram: ' . $result['telegram']['error'];
+    if (empty($result['channels'])) {
+        return '';
     }
 
-    if (!empty($result['x']['error'])) {
-        $errors[] = 'x: ' . $result['x']['error'];
+    foreach ($result['channels'] as $channel => $channelResult) {
+        if (!empty($channelResult['error'])) {
+            $errors[] = $channel . ': ' . $channelResult['error'];
+        }
     }
 
     return implode("\n", $errors);
+}
+
+function topicsocial_extract_successful_channels(array $result)
+{
+    $channels = array();
+
+    if (empty($result['channels'])) {
+        return $channels;
+    }
+
+    foreach ($result['channels'] as $channel => $channelResult) {
+        if (!empty($channelResult['success'])) {
+            $channels[] = $channel;
+        }
+    }
+
+    return $channels;
 }
 
 function topicsocial_process_thread(array $thread, array $firstpost)

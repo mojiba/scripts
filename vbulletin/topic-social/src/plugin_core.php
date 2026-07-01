@@ -82,3 +82,53 @@ function topicsocial_get_option($key, $default = null)
     $options = topicsocial_get_options();
     return isset($options[$key]) ? $options[$key] : $default;
 }
+
+function topicsocial_get_supported_channels()
+{
+    return array(
+        'telegram' => array(
+            'label' => 'Telegram',
+            'enabled_option' => 'topicsocial_telegram_enabled',
+        ),
+        'x' => array(
+            'label' => 'X',
+            'enabled_option' => 'topicsocial_x_enabled',
+        ),
+    );
+}
+
+function topicsocial_get_channel_config($channel)
+{
+    $channels = topicsocial_get_supported_channels();
+    return isset($channels[$channel]) ? $channels[$channel] : array();
+}
+
+function topicsocial_is_channel_supported($channel)
+{
+    $config = topicsocial_get_channel_config($channel);
+    return !empty($config);
+}
+
+function topicsocial_is_channel_enabled($channel)
+{
+    $config = topicsocial_get_channel_config($channel);
+    if (empty($config) || empty($config['enabled_option'])) {
+        return false;
+    }
+
+    return !empty(topicsocial_get_option($config['enabled_option'], 0));
+}
+
+function topicsocial_get_enabled_channels()
+{
+    $enabled = array();
+    $channels = topicsocial_get_supported_channels();
+
+    foreach ($channels as $channel => $config) {
+        if (topicsocial_is_channel_enabled($channel)) {
+            $enabled[$channel] = $config;
+        }
+    }
+
+    return $enabled;
+}

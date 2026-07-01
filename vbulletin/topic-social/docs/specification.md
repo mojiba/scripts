@@ -2,7 +2,7 @@
 
 ## Objective
 
-Create a vBulletin 4.2.5 plugin that publishes selected topics to X and Telegram.
+Create a vBulletin 4.2.5 plugin that publishes selected topics to multiple social channels, starting with X and Telegram.
 
 ## Environment
 
@@ -18,6 +18,7 @@ Create a vBulletin 4.2.5 plugin that publishes selected topics to X and Telegram
 4. Template-based outgoing message.
 5. Optional URL shortening through Cutt.ly.
 6. Logging of send attempts.
+7. Channel-oriented architecture for future expansion.
 
 ## Admin-facing options
 
@@ -69,6 +70,7 @@ These behaviors are internal and not exposed as panel options:
 - Show admin status/actions only to admins.
 - Use long URL if Cutt.ly fails.
 - Do not let external publishing failure break topic creation.
+- Treat channels generically so future networks can be added without rewriting the full service flow.
 
 ## Proposed runtime flow
 
@@ -98,11 +100,10 @@ A dedicated table should track publishing state per thread:
 - last_attempt_at
 - last_success_at
 - status
-- sent_to_telegram
-- sent_to_x
+- last_channels
 - last_message_text
 - last_url
 - last_image_url
 - last_error
 
-A separate log table should track attempts and responses.
+A separate log table should track attempts and responses per channel.
