@@ -8,7 +8,7 @@ This document maps the PHP scaffold to the vBulletin 4 product system.
 
 - Product ID: `topicsocial`
 - Title: `Topic Social`
-- Version: `0.1.0`
+- Version: `0.2.0`
 
 ## Product components
 
@@ -38,6 +38,8 @@ Suggested option group:
 - `topicsocial_telegram_enabled`
 - `topicsocial_telegram_bot_token`
 - `topicsocial_telegram_chat_id`
+- `topicsocial_discord_enabled`
+- `topicsocial_discord_webhook_url`
 - `topicsocial_x_enabled`
 - `topicsocial_x_api_key`
 - `topicsocial_x_api_secret`
@@ -52,11 +54,8 @@ Register a hook after new thread creation that can call:
 - `topicsocial_hook_newthread_complete($threadid)`
 
 ### Manual route
-Register a handler path for:
-- `misc.php?do=topicsocial_send&threadid={threadid}`
-
-This should call:
-- `topicsocial_handle_manual_send_request()`
+Register a showthread lifecycle hook that can call:
+- `topicsocial_hook_showthread_start()`
 
 ### Topic page status box
 Register a hook in thread page rendering so the product can inject:
@@ -64,4 +63,4 @@ Register a hook in thread page rendering so the product can inject:
 
 ## Notes
 
-The exact hook names should be confirmed against the target vBulletin 4.2.5 product XML conventions in your installation.
+The exact hook names and XML structure should be confirmed against the target vBulletin 4.2.5 installation before import.

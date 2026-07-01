@@ -111,6 +111,62 @@ function topicsocial_is_admin_user()
     return !empty($vbulletin->userinfo['adminpermissions']);
 }
 
+function topicsocial_is_manual_request()
+{
+    global $vbulletin;
+
+    return (
+        isset($vbulletin->GPC['do'])
+        && $vbulletin->GPC['do'] === 'topicsocial_send'
+    );
+}
+
+function topicsocial_get_manual_action_url($threadid)
+{
+    $threadid = intval($threadid);
+    return 'misc.php?do=topicsocial_send&threadid=' . $threadid;
+}
+
+function topicsocial_get_status_label($status)
+{
+    switch ($status) {
+        case 'sent':
+            return 'Enviado com sucesso para os canais habilitados.';
+        case 'partial':
+            return 'Envio parcial: pelo menos um canal falhou.';
+        case 'error':
+            return 'Falha no envio para os canais habilitados.';
+        case 'skipped':
+            return 'Nenhum canal habilitado para envio.';
+        case 'disabled':
+            return 'Plugin desabilitado.';
+        case 'unmonitored':
+            return 'Fórum não monitorado.';
+    }
+
+    return 'Tópico ainda não enviado.';
+}
+
+function topicsocial_render_channel_summary($lastChannels)
+{
+    if (!is_string($lastChannels) || trim($lastChannels) === '') {
+        return '';
+    }
+
+    $channels = preg_split('/\s*,\s*/', trim($lastChannels), -1, PREG_SPLIT_NO_EMPTY);
+    if (empty($channels)) {
+        return '';
+    }
+
+    $labels = array();
+    foreach ($channels as $channel) {
+        $config = topicsocial_get_channel_config($channel);
+        $labels[] = !empty($config['label']) ? $config['label'] : $channel;
+    }
+
+    return implode(', ', $labels);
+}
+
 function topicsocial_render_admin_box_html($threadid)
 {
     $threadid = intval($threadid);
@@ -119,35 +175,24 @@ function topicsocial_render_admin_box_html($threadid)
     }
 
     $status = topicsocial_get_status_row($threadid);
-    $statusText = 'Tópico ainda não enviado.';
-
-    if (!empty($status['status'])) {
-        switch ($status['status']) {
-            case 'sent':
-                $statusText = 'Enviado com sucesso para os canais configurados.';
-                break;
-            case 'partial':
-                $statusText = 'Enviado parcialmente.';
-                break;
-            case 'error':
-                $statusText = 'Erro no envio.';
-                break;
-            case 'skipped':
-                $statusText = 'Envio ignorado.';
-                break;
-        }
-    }
+    $statusKey = !empty($status['status']) ? $status['status'] : 'pending';
+    $statusText = topicsocial_get_status_label($statusKey);
+    $channelSummary = !empty($status['last_channels']) ? topicsocial_render_channel_summary($status['last_channels']) : '';
 
     $buttonLabel = !empty($status) && topicsocial_allow_resend()
-        ? 'Reenviar para o X e Telegram'
-        : 'Enviar para o X e Telegram';
+        ? 'Reenviar para os canais habilitados'
+        : 'Enviar para os canais habilitados';
 
-    $actionUrl = 'misc.php?do=topicsocial_send&threadid=' . $threadid;
+    $actionUrl = topicsocial_get_manual_action_url($threadid);
 
     $html = '';
     $html .= '<div class="smallfont" style="margin:10px 0;padding:10px;border:1px solid #ccc;background:#f8f8f8;">';
     $html .= '<strong>Topic Social</strong><br />';
     $html .= htmlspecialchars_uni($statusText) . '<br />';
+
+    if ($channelSummary !== '') {
+        $html .= 'Últimos canais com sucesso: ' . htmlspecialchars_uni($channelSummary) . '<br />';
+    }
 
     if (!empty($status['last_attempt_at'])) {
         $html .= 'Última tentativa: ' . htmlspecialchars_uni($status['last_attempt_at']) . '<br />';

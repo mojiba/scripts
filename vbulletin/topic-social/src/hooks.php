@@ -30,19 +30,17 @@ function topicsocial_handle_manual_send_request()
         return false;
     }
 
+    if (!topicsocial_is_manual_request()) {
+        return false;
+    }
+
     $threadid = isset($vbulletin->GPC['threadid']) ? intval($vbulletin->GPC['threadid']) : 0;
     if ($threadid <= 0) {
         return false;
     }
 
-    $result = topicsocial_process_thread_by_id($threadid);
-
-    $redirect = 'showthread.php?t=' . $threadid;
-    if (!empty($result['success'])) {
-        exec_header_redirect($redirect);
-    }
-
-    exec_header_redirect($redirect);
+    topicsocial_process_thread_by_id($threadid);
+    exec_header_redirect('showthread.php?t=' . $threadid);
     return true;
 }
 
@@ -54,4 +52,13 @@ function topicsocial_append_admin_box_to_output($threadid, $existingHtml)
     }
 
     return $box . $existingHtml;
+}
+
+function topicsocial_hook_showthread_start()
+{
+    if (topicsocial_is_manual_request()) {
+        return topicsocial_handle_manual_send_request();
+    }
+
+    return false;
 }

@@ -2,7 +2,7 @@
 
 ## Objective
 
-Create a vBulletin 4.2.5 plugin that publishes selected topics to multiple social channels, starting with X and Telegram.
+Create a vBulletin 4.2.5 plugin that publishes selected topics to multiple social channels, starting with Telegram, Discord, and X.
 
 ## Environment
 
@@ -46,6 +46,10 @@ Create a vBulletin 4.2.5 plugin that publishes selected topics to multiple socia
 - `topicsocial_telegram_enabled`
 - `topicsocial_telegram_bot_token`
 - `topicsocial_telegram_chat_id`
+
+### Discord
+- `topicsocial_discord_enabled`
+- `topicsocial_discord_webhook_url`
 
 ### X
 - `topicsocial_x_enabled`

@@ -64,6 +64,30 @@ function topicsocial_publish_to_telegram(array $payload)
     return topicsocial_http_post_json($url, $body);
 }
 
+function topicsocial_publish_to_discord(array $payload)
+{
+    $webhookUrl = topicsocial_get_option('topicsocial_discord_webhook_url', '');
+    if ($webhookUrl === '') {
+        return array('success' => false, 'error' => 'Discord webhook not configured.');
+    }
+
+    $body = array(
+        'content' => isset($payload['text']) ? $payload['text'] : '',
+    );
+
+    if (!empty($payload['image_url'])) {
+        $body['embeds'] = array(
+            array(
+                'image' => array(
+                    'url' => $payload['image_url'],
+                ),
+            ),
+        );
+    }
+
+    return topicsocial_http_post_json($webhookUrl, $body);
+}
+
 function topicsocial_publish_to_x(array $payload)
 {
     return array(
@@ -77,6 +101,9 @@ function topicsocial_publish_to_channel($channel, array $payload)
     switch ($channel) {
         case 'telegram':
             return topicsocial_publish_to_telegram($payload);
+
+        case 'discord':
+            return topicsocial_publish_to_discord($payload);
 
         case 'x':
             return topicsocial_publish_to_x($payload);
