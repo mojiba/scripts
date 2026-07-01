@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product productid="topicsocial" active="1">
   <title>Topic Social</title>
-  <description>Publishes selected vBulletin topics to Telegram, Discord, and X.</description>
-  <version>0.2.0</version>
+  <description>Publishes selected vBulletin topics to Telegram, WhatsApp, and X.</description>
+  <version>0.3.0</version>
   <url />
   <versioncheckurl />
 

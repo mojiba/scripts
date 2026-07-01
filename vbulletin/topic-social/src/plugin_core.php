@@ -90,9 +90,9 @@ function topicsocial_get_supported_channels()
             'label' => 'Telegram',
             'enabled_option' => 'topicsocial_telegram_enabled',
         ),
-        'discord' => array(
-            'label' => 'Discord',
-            'enabled_option' => 'topicsocial_discord_enabled',
+        'whatsapp' => array(
+            'label' => 'WhatsApp',
+            'enabled_option' => 'topicsocial_whatsapp_enabled',
         ),
         'x' => array(
             'label' => 'X',

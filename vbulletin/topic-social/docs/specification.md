@@ -2,7 +2,7 @@
 
 ## Objective
 
-Create a vBulletin 4.2.5 plugin that publishes selected topics to multiple social channels, starting with Telegram, Discord, and X.
+Create a vBulletin 4.2.5 plugin that publishes selected topics to multiple social channels, starting with Telegram, WhatsApp, and X.
 
 ## Environment
 
@@ -47,9 +47,11 @@ Create a vBulletin 4.2.5 plugin that publishes selected topics to multiple socia
 - `topicsocial_telegram_bot_token`
 - `topicsocial_telegram_chat_id`
 
-### Discord
-- `topicsocial_discord_enabled`
-- `topicsocial_discord_webhook_url`
+### WhatsApp
+- `topicsocial_whatsapp_enabled`
+- `topicsocial_whatsapp_api_url`
+- `topicsocial_whatsapp_token`
+- `topicsocial_whatsapp_to`
 
 ### X
 - `topicsocial_x_enabled`
@@ -111,3 +113,7 @@ A dedicated table should track publishing state per thread:
 - last_error
 
 A separate log table should track attempts and responses per channel.
+
+## Product XML validation status
+
+Current XML files are still drafts intended to be aligned with a real vBulletin 4.2.5 import structure. They should not be treated as production-ready imports until validated in a target installation.

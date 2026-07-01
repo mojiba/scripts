@@ -12,14 +12,16 @@
 8. `topicsocial_telegram_enabled`
 9. `topicsocial_telegram_bot_token`
 10. `topicsocial_telegram_chat_id`
-11. `topicsocial_discord_enabled`
-12. `topicsocial_discord_webhook_url`
-13. `topicsocial_x_enabled`
-14. `topicsocial_x_api_key`
-15. `topicsocial_x_api_secret`
-16. `topicsocial_x_access_token`
-17. `topicsocial_x_access_token_secret`
-18. `topicsocial_log_enabled`
+11. `topicsocial_whatsapp_enabled`
+12. `topicsocial_whatsapp_api_url`
+13. `topicsocial_whatsapp_token`
+14. `topicsocial_whatsapp_to`
+15. `topicsocial_x_enabled`
+16. `topicsocial_x_api_key`
+17. `topicsocial_x_api_secret`
+18. `topicsocial_x_access_token`
+19. `topicsocial_x_access_token_secret`
+20. `topicsocial_log_enabled`
 
 ## Suggested default template
 

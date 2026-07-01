@@ -64,28 +64,28 @@ function topicsocial_publish_to_telegram(array $payload)
     return topicsocial_http_post_json($url, $body);
 }
 
-function topicsocial_publish_to_discord(array $payload)
+function topicsocial_publish_to_whatsapp(array $payload)
 {
-    $webhookUrl = topicsocial_get_option('topicsocial_discord_webhook_url', '');
-    if ($webhookUrl === '') {
-        return array('success' => false, 'error' => 'Discord webhook not configured.');
+    $apiUrl = topicsocial_get_option('topicsocial_whatsapp_api_url', '');
+    $token = topicsocial_get_option('topicsocial_whatsapp_token', '');
+    $to = topicsocial_get_option('topicsocial_whatsapp_to', '');
+
+    if ($apiUrl === '' || $token === '' || $to === '') {
+        return array('success' => false, 'error' => 'WhatsApp credentials not configured.');
     }
 
     $body = array(
-        'content' => isset($payload['text']) ? $payload['text'] : '',
+        'to' => $to,
+        'text' => isset($payload['text']) ? $payload['text'] : '',
     );
 
     if (!empty($payload['image_url'])) {
-        $body['embeds'] = array(
-            array(
-                'image' => array(
-                    'url' => $payload['image_url'],
-                ),
-            ),
-        );
+        $body['image_url'] = $payload['image_url'];
     }
 
-    return topicsocial_http_post_json($webhookUrl, $body);
+    return topicsocial_http_post_json($apiUrl, $body, array(
+        'Authorization: Bearer ' . $token,
+    ));
 }
 
 function topicsocial_publish_to_x(array $payload)
@@ -102,8 +102,8 @@ function topicsocial_publish_to_channel($channel, array $payload)
         case 'telegram':
             return topicsocial_publish_to_telegram($payload);
 
-        case 'discord':
-            return topicsocial_publish_to_discord($payload);
+        case 'whatsapp':
+            return topicsocial_publish_to_whatsapp($payload);
 
         case 'x':
             return topicsocial_publish_to_x($payload);
