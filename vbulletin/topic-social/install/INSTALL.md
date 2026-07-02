@@ -2,11 +2,23 @@
 
 ## Current status
 
-The project now includes a rebuilt `product-topicsocial.xml` in the structural style exported by your vBulletin 4.2.5 installation.
+The project now uses `includes/topicsocial/` as the runtime path inside the vBulletin installation.
+
+## Filesystem layout expected by the product hooks
+
+These runtime files must exist inside the target vBulletin install:
+
+- `includes/topicsocial/plugin_core.php`
+- `includes/topicsocial/template_engine.php`
+- `includes/topicsocial/extractors.php`
+- `includes/topicsocial/publishers.php`
+- `includes/topicsocial/service.php`
+- `includes/topicsocial/vbulletin_integration.php`
+- `includes/topicsocial/hooks.php`
 
 ## Import path
 
-1. Place the PHP source files where vBulletin can load them.
+1. Place the PHP source files under `includes/topicsocial/`.
 2. In AdminCP, import `vbulletin/topic-social/install/product-topicsocial.xml`.
 3. Confirm the install code creates the Topic Social tables.
 4. Review the new `Topic Social` option group in AdminCP.
