@@ -167,7 +167,7 @@ function topicsocial_render_channel_summary($lastChannels)
     return implode(', ', $labels);
 }
 
-function topicsocial_render_admin_box_html($threadid)
+function topicsocial_render_thread_control_html($threadid)
 {
     $threadid = intval($threadid);
     if ($threadid <= 0 || !topicsocial_is_admin_user()) {
@@ -180,30 +180,26 @@ function topicsocial_render_admin_box_html($threadid)
     $channelSummary = !empty($status['last_channels']) ? topicsocial_render_channel_summary($status['last_channels']) : '';
 
     $buttonLabel = !empty($status) && topicsocial_allow_resend()
-        ? 'Reenviar para os canais habilitados'
-        : 'Enviar para os canais habilitados';
+        ? 'Reenviar Topic Social'
+        : 'Enviar Topic Social';
 
     $actionUrl = topicsocial_get_manual_action_url($threadid);
-
-    $html = '';
-    $html .= '<div class="smallfont" style="margin:10px 0;padding:10px;border:1px solid #ccc;background:#f8f8f8;">';
-    $html .= '<strong>Topic Social</strong><br />';
-    $html .= htmlspecialchars_uni($statusText) . '<br />';
+    $title = htmlspecialchars_uni($statusText);
 
     if ($channelSummary !== '') {
-        $html .= 'Últimos canais com sucesso: ' . htmlspecialchars_uni($channelSummary) . '<br />';
-    }
-
-    if (!empty($status['last_attempt_at'])) {
-        $html .= 'Última tentativa: ' . htmlspecialchars_uni($status['last_attempt_at']) . '<br />';
+        $title .= ' Últimos canais: ' . htmlspecialchars_uni($channelSummary);
     }
 
     if (!empty($status['last_error'])) {
-        $html .= 'Erro: ' . nl2br(htmlspecialchars_uni($status['last_error'])) . '<br />';
+        $title .= ' Erro: ' . htmlspecialchars_uni($status['last_error']);
     }
 
-    $html .= '<a class="button" href="' . htmlspecialchars_uni($actionUrl) . '">' . htmlspecialchars_uni($buttonLabel) . '</a>';
-    $html .= '</div>';
+    $html = '';
+    $html .= '<li class="popupmenu nohover">';
+    $html .= '<a class="popupctrl" href="' . htmlspecialchars_uni($actionUrl) . '" title="' . $title . '">';
+    $html .= htmlspecialchars_uni($buttonLabel);
+    $html .= '</a>';
+    $html .= '</li>';
 
     return $html;
 }

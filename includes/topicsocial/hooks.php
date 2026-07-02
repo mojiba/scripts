@@ -44,14 +44,14 @@ function topicsocial_handle_manual_send_request()
     return true;
 }
 
-function topicsocial_append_admin_box_to_output($threadid, $existingHtml)
+function topicsocial_append_thread_control($threadid, $existingHtml)
 {
-    $box = topicsocial_render_admin_box_html($threadid);
-    if ($box === '') {
+    $control = topicsocial_render_thread_control_html($threadid);
+    if ($control === '') {
         return $existingHtml;
     }
 
-    return $box . $existingHtml;
+    return $existingHtml . $control;
 }
 
 function topicsocial_hook_showthread_start()
