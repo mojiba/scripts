@@ -51,7 +51,7 @@ function topicsocial_append_thread_control($threadid, $existingHtml)
         return $existingHtml;
     }
 
-    return $existingHtml . $control;
+    return topicsocial_inject_control_into_postlist_popups($existingHtml, $control);
 }
 
 function topicsocial_hook_showthread_start()

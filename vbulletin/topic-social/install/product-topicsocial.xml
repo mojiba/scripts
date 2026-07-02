@@ -3,7 +3,7 @@
 <product productid="topicsocial" active="1">
 	<title>Topic Social</title>
 	<description>Publishes selected vBulletin topics to Telegram, WhatsApp, and X.</description>
-	<version>0.4.3</version>
+	<version>0.4.4</version>
 	<url />
 	<versioncheckurl />
 	<dependencies>
@@ -94,60 +94,60 @@ topicsocial_hook_showthread_start();
 			]]></phpcode>
 		</plugin>
 		<plugin active="1" executionorder="32767">
-			<title>Topic Social - Add control to thread tools</title>
+			<title>Topic Social - Add visible control to thread tools</title>
 			<hookname>showthread_complete</hookname>
 			<phpcode><![CDATA[
 require_once(DIR . '/includes/topicsocial/hooks.php');
-if (isset($thread) && is_array($thread) && !empty($thread['threadid']) && isset($template_hook['thread_tools']))
+if (isset($thread) && is_array($thread) && !empty($thread['threadid']) && isset($template_hook['thread_controls']))
 {
-	$template_hook['thread_tools'] = topicsocial_append_thread_control($thread['threadid'], $template_hook['thread_tools']);
+	$template_hook['thread_controls'] = topicsocial_append_thread_control($thread['threadid'], $template_hook['thread_controls']);
 }
 			]]></phpcode>
 		</plugin>
 	</plugins>
 	<phrases>
 		<phrasetype name="vBulletin Settings" fieldname="vbsettings">
-			<phrase name="settinggroup_topicsocial" date="20260702" username="admin" version="0.4.3"><![CDATA[Topic Social]]></phrase>
-			<phrase name="setting_topicsocial_enabled_title" date="20260702" username="admin" version="0.4.3"><![CDATA[Ativar Topic Social]]></phrase>
-			<phrase name="setting_topicsocial_enabled_desc" date="20260702" username="admin" version="0.4.3"><![CDATA[Ativa ou desativa o plugin Topic Social.]]></phrase>
-			<phrase name="setting_topicsocial_mode_title" date="20260702" username="admin" version="0.4.3"><![CDATA[Modo de Publica&#231;&#227;o]]></phrase>
-			<phrase name="setting_topicsocial_mode_desc" date="20260702" username="admin" version="0.4.3"><![CDATA[Escolha entre publica&#231;&#227;o autom&#225;tica ou manual.]]></phrase>
-			<phrase name="setting_topicsocial_allow_resend_title" date="20260702" username="admin" version="0.4.3"><![CDATA[Permitir Reenvio Manual]]></phrase>
-			<phrase name="setting_topicsocial_allow_resend_desc" date="20260702" username="admin" version="0.4.3"><![CDATA[Permite que administradores reenviem manualmente um t&#243;pico j&#225; processado.]]></phrase>
-			<phrase name="setting_topicsocial_forumids_title" date="20260702" username="admin" version="0.4.3"><![CDATA[F&#243;runs Monitorados]]></phrase>
-			<phrase name="setting_topicsocial_forumids_desc" date="20260702" username="admin" version="0.4.3"><![CDATA[IDs dos f&#243;runs monitorados, separados por v&#237;rgula.]]></phrase>
-			<phrase name="setting_topicsocial_message_template_title" date="20260702" username="admin" version="0.4.3"><![CDATA[Template da Mensagem]]></phrase>
-			<phrase name="setting_topicsocial_message_template_desc" date="20260702" username="admin" version="0.4.3"><![CDATA[Template usado para montar a mensagem de sa&#237;da. Use {title}, {price}, {url} e {hashtags}.]]></phrase>
-			<phrase name="setting_topicsocial_cuttly_enabled_title" date="20260702" username="admin" version="0.4.3"><![CDATA[Ativar Cutt.ly]]></phrase>
-			<phrase name="setting_topicsocial_cuttly_enabled_desc" date="20260702" username="admin" version="0.4.3"><![CDATA[Ativa o encurtamento de URLs com Cutt.ly.]]></phrase>
-			<phrase name="setting_topicsocial_cuttly_api_key_title" date="20260702" username="admin" version="0.4.3"><![CDATA[Chave da API Cutt.ly]]></phrase>
-			<phrase name="setting_topicsocial_cuttly_api_key_desc" date="20260702" username="admin" version="0.4.3"><![CDATA[Chave de API do Cutt.ly.]]></phrase>
-			<phrase name="setting_topicsocial_telegram_enabled_title" date="20260702" username="admin" version="0.4.3"><![CDATA[Ativar Telegram]]></phrase>
-			<phrase name="setting_topicsocial_telegram_enabled_desc" date="20260702" username="admin" version="0.4.3"><![CDATA[Ativa o envio para Telegram.]]></phrase>
-			<phrase name="setting_topicsocial_telegram_bot_token_title" date="20260702" username="admin" version="0.4.3"><![CDATA[Telegram Bot Token]]></phrase>
-			<phrase name="setting_topicsocial_telegram_bot_token_desc" date="20260702" username="admin" version="0.4.3"><![CDATA[Token do bot do Telegram.]]></phrase>
-			<phrase name="setting_topicsocial_telegram_chat_id_title" date="20260702" username="admin" version="0.4.3"><![CDATA[Telegram Chat ID]]></phrase>
-			<phrase name="setting_topicsocial_telegram_chat_id_desc" date="20260702" username="admin" version="0.4.3"><![CDATA[ID do chat ou canal do Telegram.]]></phrase>
-			<phrase name="setting_topicsocial_whatsapp_enabled_title" date="20260702" username="admin" version="0.4.3"><![CDATA[Ativar WhatsApp]]></phrase>
-			<phrase name="setting_topicsocial_whatsapp_enabled_desc" date="20260702" username="admin" version="0.4.3"><![CDATA[Ativa o envio para WhatsApp via API externa.]]></phrase>
-			<phrase name="setting_topicsocial_whatsapp_api_url_title" date="20260702" username="admin" version="0.4.3"><![CDATA[WhatsApp API URL]]></phrase>
-			<phrase name="setting_topicsocial_whatsapp_api_url_desc" date="20260702" username="admin" version="0.4.3"><![CDATA[Endpoint HTTP da API usada para enviar mensagens pelo WhatsApp.]]></phrase>
-			<phrase name="setting_topicsocial_whatsapp_token_title" date="20260702" username="admin" version="0.4.3"><![CDATA[WhatsApp Token]]></phrase>
-			<phrase name="setting_topicsocial_whatsapp_token_desc" date="20260702" username="admin" version="0.4.3"><![CDATA[Token de autentica&#231;&#227;o para a API do WhatsApp.]]></phrase>
-			<phrase name="setting_topicsocial_whatsapp_to_title" date="20260702" username="admin" version="0.4.3"><![CDATA[Destino WhatsApp]]></phrase>
-			<phrase name="setting_topicsocial_whatsapp_to_desc" date="20260702" username="admin" version="0.4.3"><![CDATA[N&#250;mero ou identificador do destino do WhatsApp.]]></phrase>
-			<phrase name="setting_topicsocial_x_enabled_title" date="20260702" username="admin" version="0.4.3"><![CDATA[Ativar X]]></phrase>
-			<phrase name="setting_topicsocial_x_enabled_desc" date="20260702" username="admin" version="0.4.3"><![CDATA[Ativa o envio para X.]]></phrase>
-			<phrase name="setting_topicsocial_x_api_key_title" date="20260702" username="admin" version="0.4.3"><![CDATA[X API Key]]></phrase>
-			<phrase name="setting_topicsocial_x_api_key_desc" date="20260702" username="admin" version="0.4.3"><![CDATA[Chave de API do X.]]></phrase>
-			<phrase name="setting_topicsocial_x_api_secret_title" date="20260702" username="admin" version="0.4.3"><![CDATA[X API Secret]]></phrase>
-			<phrase name="setting_topicsocial_x_api_secret_desc" date="20260702" username="admin" version="0.4.3"><![CDATA[Segredo da API do X.]]></phrase>
-			<phrase name="setting_topicsocial_x_access_token_title" date="20260702" username="admin" version="0.4.3"><![CDATA[X Access Token]]></phrase>
-			<phrase name="setting_topicsocial_x_access_token_desc" date="20260702" username="admin" version="0.4.3"><![CDATA[Access token do X.]]></phrase>
-			<phrase name="setting_topicsocial_x_access_token_secret_title" date="20260702" username="admin" version="0.4.3"><![CDATA[X Access Token Secret]]></phrase>
-			<phrase name="setting_topicsocial_x_access_token_secret_desc" date="20260702" username="admin" version="0.4.3"><![CDATA[Segredo do access token do X.]]></phrase>
-			<phrase name="setting_topicsocial_log_enabled_title" date="20260702" username="admin" version="0.4.3"><![CDATA[Ativar Logs]]></phrase>
-			<phrase name="setting_topicsocial_log_enabled_desc" date="20260702" username="admin" version="0.4.3"><![CDATA[Grava logs de tentativas por canal.]]></phrase>
+			<phrase name="settinggroup_topicsocial" date="20260702" username="admin" version="0.4.4"><![CDATA[Topic Social]]></phrase>
+			<phrase name="setting_topicsocial_enabled_title" date="20260702" username="admin" version="0.4.4"><![CDATA[Ativar Topic Social]]></phrase>
+			<phrase name="setting_topicsocial_enabled_desc" date="20260702" username="admin" version="0.4.4"><![CDATA[Ativa ou desativa o plugin Topic Social.]]></phrase>
+			<phrase name="setting_topicsocial_mode_title" date="20260702" username="admin" version="0.4.4"><![CDATA[Modo de Publica&#231;&#227;o]]></phrase>
+			<phrase name="setting_topicsocial_mode_desc" date="20260702" username="admin" version="0.4.4"><![CDATA[Escolha entre publica&#231;&#227;o autom&#225;tica ou manual.]]></phrase>
+			<phrase name="setting_topicsocial_allow_resend_title" date="20260702" username="admin" version="0.4.4"><![CDATA[Permitir Reenvio Manual]]></phrase>
+			<phrase name="setting_topicsocial_allow_resend_desc" date="20260702" username="admin" version="0.4.4"><![CDATA[Permite que administradores reenviem manualmente um t&#243;pico j&#225; processado.]]></phrase>
+			<phrase name="setting_topicsocial_forumids_title" date="20260702" username="admin" version="0.4.4"><![CDATA[F&#243;runs Monitorados]]></phrase>
+			<phrase name="setting_topicsocial_forumids_desc" date="20260702" username="admin" version="0.4.4"><![CDATA[IDs dos f&#243;runs monitorados, separados por v&#237;rgula.]]></phrase>
+			<phrase name="setting_topicsocial_message_template_title" date="20260702" username="admin" version="0.4.4"><![CDATA[Template da Mensagem]]></phrase>
+			<phrase name="setting_topicsocial_message_template_desc" date="20260702" username="admin" version="0.4.4"><![CDATA[Template usado para montar a mensagem de sa&#237;da. Use {title}, {price}, {url} e {hashtags}.]]></phrase>
+			<phrase name="setting_topicsocial_cuttly_enabled_title" date="20260702" username="admin" version="0.4.4"><![CDATA[Ativar Cutt.ly]]></phrase>
+			<phrase name="setting_topicsocial_cuttly_enabled_desc" date="20260702" username="admin" version="0.4.4"><![CDATA[Ativa o encurtamento de URLs com Cutt.ly.]]></phrase>
+			<phrase name="setting_topicsocial_cuttly_api_key_title" date="20260702" username="admin" version="0.4.4"><![CDATA[Chave da API Cutt.ly]]></phrase>
+			<phrase name="setting_topicsocial_cuttly_api_key_desc" date="20260702" username="admin" version="0.4.4"><![CDATA[Chave de API do Cutt.ly.]]></phrase>
+			<phrase name="setting_topicsocial_telegram_enabled_title" date="20260702" username="admin" version="0.4.4"><![CDATA[Ativar Telegram]]></phrase>
+			<phrase name="setting_topicsocial_telegram_enabled_desc" date="20260702" username="admin" version="0.4.4"><![CDATA[Ativa o envio para Telegram.]]></phrase>
+			<phrase name="setting_topicsocial_telegram_bot_token_title" date="20260702" username="admin" version="0.4.4"><![CDATA[Telegram Bot Token]]></phrase>
+			<phrase name="setting_topicsocial_telegram_bot_token_desc" date="20260702" username="admin" version="0.4.4"><![CDATA[Token do bot do Telegram.]]></phrase>
+			<phrase name="setting_topicsocial_telegram_chat_id_title" date="20260702" username="admin" version="0.4.4"><![CDATA[Telegram Chat ID]]></phrase>
+			<phrase name="setting_topicsocial_telegram_chat_id_desc" date="20260702" username="admin" version="0.4.4"><![CDATA[ID do chat ou canal do Telegram.]]></phrase>
+			<phrase name="setting_topicsocial_whatsapp_enabled_title" date="20260702" username="admin" version="0.4.4"><![CDATA[Ativar WhatsApp]]></phrase>
+			<phrase name="setting_topicsocial_whatsapp_enabled_desc" date="20260702" username="admin" version="0.4.4"><![CDATA[Ativa o envio para WhatsApp via API externa.]]></phrase>
+			<phrase name="setting_topicsocial_whatsapp_api_url_title" date="20260702" username="admin" version="0.4.4"><![CDATA[WhatsApp API URL]]></phrase>
+			<phrase name="setting_topicsocial_whatsapp_api_url_desc" date="20260702" username="admin" version="0.4.4"><![CDATA[Endpoint HTTP da API usada para enviar mensagens pelo WhatsApp.]]></phrase>
+			<phrase name="setting_topicsocial_whatsapp_token_title" date="20260702" username="admin" version="0.4.4"><![CDATA[WhatsApp Token]]></phrase>
+			<phrase name="setting_topicsocial_whatsapp_token_desc" date="20260702" username="admin" version="0.4.4"><![CDATA[Token de autentica&#231;&#227;o para a API do WhatsApp.]]></phrase>
+			<phrase name="setting_topicsocial_whatsapp_to_title" date="20260702" username="admin" version="0.4.4"><![CDATA[Destino WhatsApp]]></phrase>
+			<phrase name="setting_topicsocial_whatsapp_to_desc" date="20260702" username="admin" version="0.4.4"><![CDATA[N&#250;mero ou identificador do destino do WhatsApp.]]></phrase>
+			<phrase name="setting_topicsocial_x_enabled_title" date="20260702" username="admin" version="0.4.4"><![CDATA[Ativar X]]></phrase>
+			<phrase name="setting_topicsocial_x_enabled_desc" date="20260702" username="admin" version="0.4.4"><![CDATA[Ativa o envio para X.]]></phrase>
+			<phrase name="setting_topicsocial_x_api_key_title" date="20260702" username="admin" version="0.4.4"><![CDATA[X API Key]]></phrase>
+			<phrase name="setting_topicsocial_x_api_key_desc" date="20260702" username="admin" version="0.4.4"><![CDATA[Chave de API do X.]]></phrase>
+			<phrase name="setting_topicsocial_x_api_secret_title" date="20260702" username="admin" version="0.4.4"><![CDATA[X API Secret]]></phrase>
+			<phrase name="setting_topicsocial_x_api_secret_desc" date="20260702" username="admin" version="0.4.4"><![CDATA[Segredo da API do X.]]></phrase>
+			<phrase name="setting_topicsocial_x_access_token_title" date="20260702" username="admin" version="0.4.4"><![CDATA[X Access Token]]></phrase>
+			<phrase name="setting_topicsocial_x_access_token_desc" date="20260702" username="admin" version="0.4.4"><![CDATA[Access token do X.]]></phrase>
+			<phrase name="setting_topicsocial_x_access_token_secret_title" date="20260702" username="admin" version="0.4.4"><![CDATA[X Access Token Secret]]></phrase>
+			<phrase name="setting_topicsocial_x_access_token_secret_desc" date="20260702" username="admin" version="0.4.4"><![CDATA[Segredo do access token do X.]]></phrase>
+			<phrase name="setting_topicsocial_log_enabled_title" date="20260702" username="admin" version="0.4.4"><![CDATA[Ativar Logs]]></phrase>
+			<phrase name="setting_topicsocial_log_enabled_desc" date="20260702" username="admin" version="0.4.4"><![CDATA[Grava logs de tentativas por canal.]]></phrase>
 		</phrasetype>
 	</phrases>
 	<options>

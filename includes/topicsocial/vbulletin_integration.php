@@ -147,6 +147,26 @@ function topicsocial_get_status_label($status)
     return 'Tópico ainda não enviado.';
 }
 
+function topicsocial_get_status_short_label($status)
+{
+    switch ($status) {
+        case 'sent':
+            return 'Enviado';
+        case 'partial':
+            return 'Parcial';
+        case 'error':
+            return 'Erro';
+        case 'skipped':
+            return 'Sem canais';
+        case 'disabled':
+            return 'Desabilitado';
+        case 'unmonitored':
+            return 'Fórum fora';
+    }
+
+    return 'Pendente';
+}
+
 function topicsocial_render_channel_summary($lastChannels)
 {
     if (!is_string($lastChannels) || trim($lastChannels) === '') {
@@ -177,29 +197,47 @@ function topicsocial_render_thread_control_html($threadid)
     $status = topicsocial_get_status_row($threadid);
     $statusKey = !empty($status['status']) ? $status['status'] : 'pending';
     $statusText = topicsocial_get_status_label($statusKey);
+    $shortStatus = topicsocial_get_status_short_label($statusKey);
     $channelSummary = !empty($status['last_channels']) ? topicsocial_render_channel_summary($status['last_channels']) : '';
-
-    $buttonLabel = !empty($status) && topicsocial_allow_resend()
-        ? 'Reenviar Topic Social'
-        : 'Enviar Topic Social';
-
     $actionUrl = topicsocial_get_manual_action_url($threadid);
-    $title = htmlspecialchars_uni($statusText);
 
+    $title = $statusText;
     if ($channelSummary !== '') {
-        $title .= ' Últimos canais: ' . htmlspecialchars_uni($channelSummary);
+        $title .= ' Últimos canais: ' . $channelSummary;
+    }
+    if (!empty($status['last_error'])) {
+        $title .= ' Erro: ' . $status['last_error'];
     }
 
-    if (!empty($status['last_error'])) {
-        $title .= ' Erro: ' . htmlspecialchars_uni($status['last_error']);
-    }
+    $label = 'Topic Social: ' . $shortStatus;
 
     $html = '';
-    $html .= '<li class="popupmenu nohover">';
-    $html .= '<a class="popupctrl" href="' . htmlspecialchars_uni($actionUrl) . '" title="' . $title . '">';
-    $html .= htmlspecialchars_uni($buttonLabel);
-    $html .= '</a>';
+    $html .= '<li class="popupmenu" id="topicsocial_tools">';
+    $html .= '<h6><a class="popupctrl" href="' . htmlspecialchars_uni($actionUrl) . '" title="' . htmlspecialchars_uni($title) . '">';
+    $html .= htmlspecialchars_uni($label);
+    $html .= '</a></h6>';
     $html .= '</li>';
 
     return $html;
+}
+
+function topicsocial_inject_control_into_postlist_popups($controlsHtml, $controlHtml)
+{
+    if (!is_string($controlsHtml) || trim($controlsHtml) === '' || !is_string($controlHtml) || trim($controlHtml) === '') {
+        return $controlsHtml;
+    }
+
+    if (strpos($controlsHtml, 'id="topicsocial_tools"') !== false) {
+        return $controlsHtml;
+    }
+
+    if (preg_match('#</ul>\s*</div>\s*</div>\s*$#is', $controlsHtml)) {
+        return preg_replace('#</ul>(\s*</div>\s*</div>\s*)$#is', $controlHtml . '</ul>$1', $controlsHtml, 1);
+    }
+
+    if (strpos($controlsHtml, '</ul>') !== false) {
+        return preg_replace('#</ul>#is', $controlHtml . '</ul>', $controlsHtml, 1);
+    }
+
+    return $controlsHtml . $controlHtml;
 }
